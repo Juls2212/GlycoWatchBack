@@ -1,0 +1,2011 @@
+﻿Documentacion GlyCowatch
+SECCIÃ“N 1 â€” VISIÃ“N Y ALCANCE FUNCIONAL
+Producto: GlycoWatch
+Tipo: Sistema web inteligente de monitoreo glucÃ©mico con integraciÃ³n IoT e inteligencia artificial para apoyo al control de pacientes diabÃ©ticos.
+DeclaraciÃ³n del Problema
+Las personas con diabetes requieren monitoreo constante de sus niveles de glucosa para reducir riesgos asociados a episodios de hipoglucemia, hiperglucemia y descontrol metabÃ³lico sostenido. Sin embargo, en muchos contextos este seguimiento presenta cuatro problemas crÃ­ticos:
+Monitoreo fragmentado: Las mediciones no siempre quedan centralizadas en una plataforma accesible y trazable.
+Falta de anÃ¡lisis oportuno: Aunque se registren valores, no siempre se detectan patrones relevantes como picos, caÃ­das abruptas, variabilidad excesiva o deterioro progresivo.
+Escasa capacidad predictiva: El seguimiento tradicional suele ser reactivo; se observa el dato histÃ³rico, pero no se estima el riesgo futuro de descontrol metabÃ³lico.
+Baja integraciÃ³n tecnolÃ³gica: Los dispositivos de captura, el almacenamiento, la visualizaciÃ³n y el anÃ¡lisis suelen estar desacoplados o gestionados manualmente.
+Propuesta de Valor (QuÃ© y Por QuÃ©)
+GlycoWatch resuelve estos problemas mediante una arquitectura integrada compuesta por un dispositivo intermediario ESP32, un backend robusto en Java con Spring Boot, una interfaz web en TypeScript y un mÃ³dulo de inteligencia artificial que transforma mediciones histÃ³ricas en conocimiento clÃ­nico Ãºtil.
+El sistema recibe automÃ¡ticamente mediciones de glucosa desde dispositivos IoT autorizados, las valida y almacena en una base de datos en la nube, genera alertas ante episodios crÃ­ticos, presenta visualizaciones temporales e indicadores descriptivos, y ejecuta un modelo de clasificaciÃ³n de riesgo que estima el nivel de descontrol metabÃ³lico del usuario.
+De esta forma, GlycoWatch no solo registra datos: los interpreta, los contextualiza y los convierte en apoyo para la toma de decisiones.
+Alcance Funcional â€” Lo que el sistema SÃ hace (IN SCOPE)
+RF-01: Registro e inicio de sesiÃ³n de usuarios mediante correo electrÃ³nico y contraseÃ±a.
+RF-02: GestiÃ³n de perfil de usuario con actualizaciÃ³n de datos bÃ¡sicos y configuraciÃ³n de umbrales personalizados de hipoglucemia e hiperglucemia.
+RF-03: Registro, vinculaciÃ³n, desvinculaciÃ³n, activaciÃ³n, desactivaciÃ³n y revocaciÃ³n de dispositivos ESP32 identificados de forma Ãºnica.
+RF-04: GeneraciÃ³n y actualizaciÃ³n de credenciales seguras de autenticaciÃ³n para dispositivos IoT.
+RF-05: RecepciÃ³n automÃ¡tica de mediciones de glucosa enviadas desde un dispositivo intermediario ESP32.
+RF-06: ValidaciÃ³n de origen, autorizaciÃ³n del dispositivo, deduplicaciÃ³n y verificaciÃ³n de rangos fisiolÃ³gicamente aceptables en cada mediciÃ³n.
+RF-07: Almacenamiento persistente de mediciones con trazabilidad completa: valor, fecha de mediciÃ³n, fecha de recepciÃ³n, usuario, dispositivo y origen.
+RF-08: Consulta de historial de mediciones con filtros por rango de fechas y agrupaciÃ³n por dÃ­a, semana, mes y aÃ±o.
+RF-09: VisualizaciÃ³n de grÃ¡ficas temporales de glucosa e indicadores estadÃ­sticos como promedio, mÃ­nimo, mÃ¡ximo, desviaciÃ³n estÃ¡ndar y tendencia.
+RF-10: CÃ¡lculo de mÃ©tricas descriptivas avanzadas como frecuencia de mediciÃ³n, porcentaje de tiempo en rango y comparaciÃ³n entre periodos.
+RF-11: DetecciÃ³n de cambios relevantes entre periodos comparados, incluyendo aumento del promedio, incremento de variabilidad y mayor frecuencia de episodios crÃ­ticos.
+RF-12: GeneraciÃ³n automÃ¡tica de alertas por hipoglucemia e hiperglucemia segÃºn umbrales personalizados del usuario.
+RF-13: Consulta y gestiÃ³n de alertas, incluyendo historial y marcaciÃ³n como leÃ­das.
+RF-14: ConstrucciÃ³n de caracterÃ­sticas derivadas desde el historial de mediciones, como promedio mÃ³vil, variabilidad, tendencia, frecuencia y cambios recientes.
+RF-15: EjecuciÃ³n de un mÃ³dulo de inteligencia artificial supervisada para estimar riesgo de descontrol metabÃ³lico.
+RF-16: ClasificaciÃ³n del riesgo en categorÃ­as interpretables, como bajo, medio y alto.
+RF-17: Almacenamiento y consulta del historial de predicciones, con trazabilidad de puntaje, fecha de cÃ¡lculo, versiÃ³n del modelo y caracterÃ­sticas utilizadas.
+RF-18: Registro y consulta de mÃ©tricas de desempeÃ±o del modelo, como accuracy, F1 Score y AUC, o equivalentes reproducibles.
+RF-19: Interfaz web para consulta de mediciones, grÃ¡ficas, alertas, comparaciones y predicciones.
+RF-20: ActualizaciÃ³n de informaciÃ³n mostrada en la interfaz cuando ingresen nuevas mediciones.
+RF-21: Registro de eventos relevantes del sistema para auditorÃ­a, seguimiento y depuraciÃ³n.
+Exclusiones ExplÃ­citas â€” Lo que el sistema NO hace (OUT OF SCOPE)
+No reemplaza criterio mÃ©dico profesional ni emite diagnÃ³stico clÃ­nico formal.
+No administra dosis automÃ¡ticas de insulina ni controla actuadores mÃ©dicos.
+No se integra, en esta versiÃ³n, con hospitales, EPS, HCE/EMR u otros sistemas clÃ­nicos externos.
+No incluye videollamadas, telemedicina ni mensajerÃ­a mÃ©dico-paciente.
+No implementa geolocalizaciÃ³n, seguimiento en tiempo real de pacientes ni servicios de emergencia.
+No incorpora mÃºltiples tipos de sensores biomÃ©dicos adicionales en esta versiÃ³n, aunque la arquitectura permitirÃ¡ su futura expansiÃ³n.
+No ejecuta procesamiento embebido complejo de inteligencia artificial en el ESP32; el anÃ¡lisis inteligente ocurre en el backend.
+No ofrece aplicaciÃ³n mÃ³vil nativa en esta fase; la interacciÃ³n del usuario final ocurre mediante interfaz web.
+Objetivo General del Sistema
+DiseÃ±ar e implementar una plataforma web inteligente para el monitoreo glucÃ©mico de personas diabÃ©ticas, capaz de recibir mediciones desde un ESP32, almacenarlas de forma segura, analizarlas mediante tÃ©cnicas descriptivas y predictivas, generar alertas clÃ­nicas bÃ¡sicas y presentar la informaciÃ³n de manera visual, interpretable y accesible.
+Objetivos EspecÃ­ficos
+Centralizar el historial de mediciones de glucosa de cada usuario en una base de datos en la nube.
+Permitir la captura automÃ¡tica de mediciones desde dispositivos ESP32 autorizados.
+Proporcionar visualizaciones claras del comportamiento glucÃ©mico en distintos periodos.
+Detectar episodios crÃ­ticos y cambios relevantes en el comportamiento histÃ³rico.
+Estimar el riesgo de descontrol metabÃ³lico mediante un mÃ³dulo de inteligencia artificial.
+Mantener trazabilidad de eventos, predicciones y mÃ©tricas del modelo.
+Construir una arquitectura mantenible, modular y escalable basada en frontend, backend, base de datos e integraciÃ³n IoT.
+Roles del Sistema
+USUARIO/PACIENTE: Se registra, inicia sesiÃ³n, consulta su historial de mediciones, visualiza grÃ¡ficas, revisa alertas, consulta predicciones y configura sus umbrales personalizados.
+DISPOSITIVO ESP32: EnvÃ­a mediciones de glucosa al backend mediante credenciales seguras. No consulta informaciÃ³n ni interactÃºa con la interfaz web.
+ADMINISTRADOR DEL SISTEMA: Supervisa el funcionamiento general, revisa auditorÃ­a, gestiona incidencias tÃ©cnicas y, segÃºn las reglas de implementaciÃ³n final, puede administrar usuarios o dispositivos para fines operativos.
+Stakeholders Relevantes
+Paciente/usuario final: Principal beneficiario del monitoreo y anÃ¡lisis.
+Docente evaluador: Interesado en la correcta aplicaciÃ³n de arquitectura, patrones, estructuras de datos, IA e integraciÃ³n IoT.
+Equipo de desarrollo asistido por IA: Responsable de implementar la soluciÃ³n a partir de especificaciones precisas.
+Operador tÃ©cnico o administrador: Encargado de despliegue, soporte y monitoreo tÃ©cnico del sistema.
+Restricciones TecnolÃ³gicas Confirmadas
+Backend: Java con Spring Boot.
+Frontend: TypeScript exclusivamente.
+Arquitectura base: Frontend + Backend + Base de Datos en la nube.
+IntegraciÃ³n externa obligatoria: ESP32 como dispositivo intermediario de captura.
+Persistencia recomendada: PostgreSQL en la nube.
+Despliegue objetivo: Frontend en Vercel, backend en Cloud Run y base de datos PostgreSQL administrada.
+Inteligencia artificial: Obligatoria en la soluciÃ³n final.
+ContenerizaciÃ³n: Compatible con Docker.
+API: Documentada formalmente para integraciÃ³n y pruebas
+SECCIÃ“N 2 â€” ARCHITECTURE DECISION RECORDS (ADRs)
+Cada ADR documenta una decisiÃ³n arquitectÃ³nica firme del proyecto. Estos ADRs son obligatorios para la implementaciÃ³n y sirven como contrato tÃ©cnico para agentes programadores, documentaciÃ³n y evaluaciÃ³n acadÃ©mica. No deben alterarse sin rediseÃ±o explÃ­cito del sistema.
+ADR-001 | El backend oficial se implementa exclusivamente con Java + Spring Boot
+Estado: APROBADO
+Contexto: El proyecto exige backend robusto, mantenible, con arquitectura en capas, seguridad, integraciÃ³n con base de datos, documentaciÃ³n API y soporte para lÃ³gica de negocio compleja.
+DecisiÃ³n: Todo el backend del sistema GlycoWatch se implementa exclusivamente en Java con Spring Boot. No se permitirÃ¡ Node.js, FirebaseFunctions, PHP ni otro runtime como backend principal.
+Consecuencia: Toda la lÃ³gica de autenticaciÃ³n, gestiÃ³n de usuarios, dispositivos, mediciones, alertas, analÃ­tica, auditorÃ­a e inteligencia artificial orquestada residirÃ¡ en Spring Boot.
+JustificaciÃ³n: Spring Boot permite una arquitectura empresarial clara, integraciÃ³n natural con JPA/Hibernate, seguridad con Spring Security, documentaciÃ³n con OpenAPI y modularidad suficiente para defender el proyecto a nivel acadÃ©mico.
+ADR-002 | El frontend oficial se implementa con Next.js + TypeScript
+Estado: APROBADO
+Contexto: El sistema requiere dashboard, autenticaciÃ³n, visualizaciÃ³n de grÃ¡ficas, filtros temporales, alertas y pantallas administrativas en una interfaz web moderna.
+DecisiÃ³n: El frontend oficial de GlycoWatch se implementa con Next.js y TypeScript. No se usarÃ¡ Angular como framework principal.
+Consecuencia: La UI se construirÃ¡ sobre el ecosistema React, aprovechando componentes reutilizables, enrutamiento moderno, tipado fuerte y facilidad de integraciÃ³n con APIs REST.
+JustificaciÃ³n: Next.js ofrece una curva de implementaciÃ³n mÃ¡s directa para dashboards y aplicaciones de visualizaciÃ³n intensiva, facilita el trabajo asistido por IA y reduce complejidad estructural respecto a Angular para este tipo de proyecto.
+ADR-003 | PostgreSQL es la base de datos principal del sistema
+Estado: APROBADO
+Contexto: El sistema necesita integridad transaccional, relaciones bien definidas, trazabilidad, filtros por fecha, agrupaciones temporales e historial auditable.
+DecisiÃ³n: GlycoWatch utilizarÃ¡ PostgreSQL como base de datos principal y oficial. No se adoptarÃ¡ FirebaseFirestore como almacenamiento primario del dominio.
+Consecuencia: Todas las entidades de negocio crÃ­ticas se modelarÃ¡n relacionalmente: usuarios, dispositivos, mediciones, alertas, predicciones, auditorÃ­a, mÃ©tricas de modelo y configuraciones.
+JustificaciÃ³n: PostgreSQL permite integridad, consultas temporales avanzadas, Ã­ndices eficientes, consistencia transaccional y diseÃ±o defendible para un sistema clÃ­nico-acadÃ©mico con trazabilidad.
+ADR-004 | La comunicaciÃ³n del ESP32 con el backend se realiza por HTTPS REST con autenticaciÃ³n por dispositivo
+Estado: APROBADO
+Contexto: El sistema necesita una integraciÃ³n clara entre el ESP32 y el backend sin elevar innecesariamente la complejidad operativa inicial.
+DecisiÃ³n: El ESP32 enviarÃ¡ mediciones mediante solicitudes HTTPS REST al backend Spring Boot. Cada dispositivo deberÃ¡ autenticarse con identificador Ãºnico y clave segura.
+Consecuencia: Se define un punto de entrada tipo /api/iot/measurements o equivalente. No se implementarÃ¡ MQTT como canal principal en la primera versiÃ³n.
+JustificaciÃ³n: REST sobre HTTPS reduce complejidad de despliegue, simplifica pruebas, facilita documentaciÃ³n y es suficiente para el volumen esperado del proyecto acadÃ©mico.
+ADR-005 | Arquitectura backend en capas: dominio, aplicaciÃ³n e infraestructura
+Estado: APROBADO
+Contexto: Los requerimientos no funcionales exigen separaciÃ³n clara entre dominio, aplicaciÃ³n e infraestructura, ademÃ¡s de mantenibilidad y escalabilidad.
+DecisiÃ³n: El backend se organizarÃ¡ con arquitectura en capas, separando como mÃ­nimo:
+domain
+application
+infrastructure
+interfaces
+Consecuencia: La lÃ³gica del negocio no dependerÃ¡ directamente de controladores, persistencia ni detalles externos. Los casos de uso orquestarÃ¡n el dominio y la infraestructura implementarÃ¡ adaptadores concretos.
+JustificaciÃ³n: Esta estructura cumple el requisito acadÃ©mico, reduce acoplamiento, mejora testabilidad y permite evoluciÃ³n futura del sistema.
+ADR-006 | Las mediciones deben ser deduplicadas en el backend antes de persistirse
+Estado: APROBADO
+Contexto: El ESP32 puede retransmitir datos ante fallos temporales de red, lo que podrÃ­a producir duplicados y afectar analÃ­tica, alertas y predicciones.
+DecisiÃ³n: Toda mediciÃ³n entrante debe pasar por una polÃ­tica de deduplicaciÃ³n obligatoria en backend antes de guardarse.
+Consecuencia: Cada mediciÃ³n tendrÃ¡ una clave Ãºnica o huella de deduplicaciÃ³n basada en combinaciÃ³n de dispositivo, usuario, instante de mediciÃ³n, valor y/o identificador de evento. El backend rechazarÃ¡ duplicados lÃ³gicos.
+JustificaciÃ³n: La deduplicaciÃ³n protege la consistencia del historial, evita alertas falsas y cumple los RNF de confiabilidad y retransmisiÃ³n controlada.
+ADR-007 | Las mediciones invÃ¡lidas no se descartan silenciosamente: se marcan con estado de validez
+Estado: APROBADO
+Contexto: Algunas mediciones pueden llegar corruptas, fuera de rango fisiolÃ³gico o inconsistentes, pero pueden ser Ãºtiles para auditorÃ­a y depuraciÃ³n.
+DecisiÃ³n: Las mediciones que no cumplan validaciones clÃ­nicas o tÃ©cnicas no se eliminarÃ¡n sin rastro; se almacenarÃ¡n con un indicador de validez/invalidez y su motivo.
+Consecuencia: El sistema podrÃ¡ distinguir entre datos vÃ¡lidos para analÃ­tica y datos invÃ¡lidos para trazabilidad tÃ©cnica.
+JustificaciÃ³n: Esto fortalece auditorÃ­a, depuraciÃ³n y transparencia del sistema, evitando pÃ©rdida silenciosa de eventos.
+ADR-008 | Las alertas se generan en backend como consecuencia del registro de una mediciÃ³n vÃ¡lida
+Estado: APROBADO
+Contexto: El frontend no debe contener lÃ³gica clÃ­nica ni ser responsable de determinar episodios crÃ­ticos.
+DecisiÃ³n: La detecciÃ³n de hipoglucemia e hiperglucemia se realizarÃ¡ exclusivamente en el backend, inmediatamente despuÃ©s del registro vÃ¡lido de una mediciÃ³n.
+Consecuencia: El frontend solo consulta y presenta alertas; no calcula eventos crÃ­ticos por su cuenta.
+JustificaciÃ³n: Centralizar esta lÃ³gica evita inconsistencias, protege reglas clÃ­nicas y mantiene un Ãºnico punto de verdad.
+ADR-009 | El sistema usa umbrales glucÃ©micos personalizados por usuario
+Estado: APROBADO
+Contexto: Los usuarios pueden tener distintos criterios clÃ­nicos o configuraciones de referencia para episodios de hipo e hiperglucemia.
+DecisiÃ³n: Cada usuario tendrÃ¡ configuraciÃ³n personalizada de umbrales, administrada desde su perfil.
+Consecuencia: La generaciÃ³n de alertas y ciertos indicadores se basarÃ¡n en la configuraciÃ³n individual del usuario y no en valores globales rÃ­gidos.
+JustificaciÃ³n: Esto mejora precisiÃ³n funcional del sistema y cumple con los requerimientos de personalizaciÃ³n.
+ADR-010 | La analÃ­tica descriptiva y el mÃ³dulo IA estÃ¡n desacoplados
+Estado: APROBADO
+Contexto: El sistema incluye estadÃ­sticas descriptivas y tambiÃ©n un mÃ³dulo predictivo. Ambas capacidades tienen propÃ³sitos distintos y ciclos de evoluciÃ³n diferentes.
+DecisiÃ³n: La analÃ­tica descriptiva y la predicciÃ³n IA serÃ¡n mÃ³dulos separados a nivel lÃ³gico y de cÃ³digo.
+Consecuencia: El cÃ¡lculo de promedios, tendencias, tiempo en rango y comparaciones no dependerÃ¡ del modelo de IA. Del mismo modo, el modelo IA consumirÃ¡ features derivadas sin mezclarse con la capa de presentaciÃ³n estadÃ­stica.
+JustificaciÃ³n: Este desacoplamiento mejora mantenibilidad, trazabilidad y evoluciÃ³n futura del modelo predictivo.
+ADR-011 | El modelo IA se integra como componente sustituible detrÃ¡s de una estrategia de predicciÃ³n
+Estado: APROBADO
+Contexto: El sistema debe permitir sustituir o mejorar el modelo sin rediseÃ±ar toda la arquitectura.
+DecisiÃ³n: La predicciÃ³n de riesgo se expondrÃ¡ a travÃ©s de una interfaz de estrategia, por ejemploRiskPredictionStrategy, con implementaciones intercambiables.
+Consecuencia: La primera versiÃ³n podrÃ¡ usar un enfoque simple y luego migrar a otro modelo sin alterar controladores, persistencia ni contratos externos.
+JustificaciÃ³n: Cumple los RNF de escalabilidad y mantenibilidad, y permite evoluciÃ³n progresiva del mÃ³dulo IA.
+ADR-012 | La primera versiÃ³n del mÃ³dulo IA prioriza interpretabilidad sobre complejidad algorÃ­tmica
+Estado: APROBADO
+Contexto: El proyecto es acadÃ©mico y debe demostrar IA funcional, trazable e interpretable, sin sobrediseÃ±ar innecesariamente.
+DecisiÃ³n: La primera versiÃ³n del sistema privilegiarÃ¡ un modelo o pipeline cuya salida sea explicable a partir de features como promedio mÃ³vil, variabilidad, frecuencia, tendencia y episodios crÃ­ticos recientes.
+Consecuencia: El sistema almacenarÃ¡ no solo el nivel de riesgo, sino tambiÃ©n el contexto mÃ­nimo de las caracterÃ­sticas utilizadas.
+JustificaciÃ³n: Un modelo interpretable es mÃ¡s defendible ante evaluaciÃ³n acadÃ©mica, mÃ¡s consistente con los RNF del proyecto y mÃ¡s fÃ¡cil de documentar.
+ADR-013 | La trazabilidad del modelo es obligatoria en cada predicciÃ³n
+Estado: APROBADO
+Contexto: El sistema debe conservar la versiÃ³n del modelo y las caracterÃ­sticas utilizadas en cada predicciÃ³n.
+DecisiÃ³n: Toda predicciÃ³n guardada incluirÃ¡ como mÃ­nimo:
+fecha de cÃ¡lculo
+puntaje
+nivel de riesgo
+versiÃ³n del modelo
+snapshot de features o referencia trazable
+Consecuencia: No se permitirÃ¡ almacenar predicciones â€œsin contextoâ€.
+JustificaciÃ³n: Esto satisface requisitos de calidad, auditorÃ­a y reproducibilidad del mÃ³dulo IA.
+ADR-014 | Las entidades crÃ­ticas del dominio deben tener auditorÃ­a completa
+Estado: APROBADO
+Contexto: El sistema necesita seguimiento tÃ©cnico y trazabilidad operativa de eventos relevantes.
+DecisiÃ³n: Entidades crÃ­ticas como usuarios, dispositivos, mediciones, alertas y predicciones deberÃ¡n mantener auditorÃ­a de creaciÃ³n y actualizaciÃ³n. Adicionalmente, eventos relevantes se registrarÃ¡n en una bitÃ¡cora de auditorÃ­a separada.
+Consecuencia: El sistema distinguirÃ¡ entre:
+auditorÃ­a de entidad
+auditorÃ­a de eventos del sistema
+JustificaciÃ³n: Esto mejora seguimiento, depuraciÃ³n, seguridad y capacidad de defensa tÃ©cnica del proyecto.
+ADR-015 | Los endpoints protegidos de usuario utilizarÃ¡n JWT; los dispositivos usarÃ¡n credenciales separadas
+Estado: APROBADO
+Contexto: Usuarios humanos y dispositivos IoT tienen naturalezas de autenticaciÃ³n diferentes.
+DecisiÃ³n: Los usuarios web se autenticarÃ¡n con JWT y los dispositivos ESP32 lo harÃ¡n con una credencial especÃ­fica por dispositivo, separada del esquema de usuario.
+Consecuencia: No se reutilizarÃ¡n cuentas de usuario para autenticar hardware. ExistirÃ¡n flujos diferenciados de seguridad.
+JustificaciÃ³n: Esta separaciÃ³n reduce riesgos, mejora control de acceso y modela correctamente la identidad tÃ©cnica del dispositivo.
+ADR-016 | La actualizaciÃ³n del frontend frente a nuevas mediciones serÃ¡ near real-time, no tiempo real estricto
+Estado: APROBADO
+Contexto: El sistema debe reflejar nuevas mediciones sin imponer la complejidad de una arquitectura distribuida de tiempo real estricto.
+DecisiÃ³n: La interfaz se actualizarÃ¡ en modalidad near real-time, mediante polling eficiente o mecanismo simple equivalente. WebSockets podrÃ¡n incorporarse despuÃ©s, pero no son requisito de la primera versiÃ³n.
+Consecuencia: El dashboard y vistas principales refrescarÃ¡n informaciÃ³n periÃ³dicamente o ante acciones relevantes sin requerir infraestructura adicional compleja.
+JustificaciÃ³n: Esto satisface funcionalidad esperada con menor riesgo tÃ©cnico para la primera entrega.
+ADR-017 | Las consultas temporales se optimizan con Ã­ndices por usuario y fecha de mediciÃ³n
+Estado: APROBADO
+Contexto: El sistema depende intensamente de filtros por rango de fechas, consulta de Ãºltima mediciÃ³n y agrupaciones temporales.
+DecisiÃ³n: La tabla de mediciones deberÃ¡ diseÃ±arse con Ã­ndices especÃ­ficos orientados a consultas por:
+usuario
+dispositivo
+fecha de mediciÃ³n
+unicidad/deduplicaciÃ³n
+Consecuencia: Las migraciones y el modelo relacional deberÃ¡n contemplar Ã­ndices compuestos desde etapas tempranas.
+JustificaciÃ³n: Esta decisiÃ³n soporta rendimiento, escalabilidad y cumplimiento de RNF sobre consultas eficientes.
+ADR-018 | El despliegue oficial separa frontend, backend y base de datos administrada
+Estado: APROBADO
+Contexto: El proyecto requiere despliegue en la nube, claridad arquitectÃ³nica y separaciÃ³n de responsabilidades.
+DecisiÃ³n: El despliegue oficial del sistema serÃ¡:
+Frontend: Vercel
+Backend: Cloud Run
+Base de datos: PostgreSQL administrado
+Consecuencia: El sistema se desplegarÃ¡ como arquitectura desacoplada por servicios, aunque el backend se mantenga como monolito modular.
+JustificaciÃ³n: Esta separaciÃ³n es simple, profesional y defendible en exposiciÃ³n tÃ©cnica.
+ADR-019 | Docker es obligatorio para la reproducibilidad del entorno
+Estado: APROBADO
+Contexto: El proyecto debe ejecutarse en entornos reproducibles y facilitar desarrollo colaborativo asistido por IA.
+DecisiÃ³n: El sistema deberÃ¡ proveer configuraciÃ³n compatible con Docker para backend y servicios de soporte local.
+Consecuencia: La configuraciÃ³n local y eventualmente CI/CD se apoyarÃ¡n en contenedores reproducibles.
+JustificaciÃ³n: Esto mejora portabilidad, facilita onboarding y cumple el RNF de despliegue reproducible.
+ADR-020 | La API REST debe documentarse formalmente con OpenAPI/Swagger
+Estado: APROBADO
+Contexto: El proyecto necesita integraciÃ³n clara entre frontend, backend, pruebas y agentes programadores.
+DecisiÃ³n: Todos los endpoints principales del sistema deberÃ¡n documentarse con OpenAPI/Swagger.
+Consecuencia: La API serÃ¡ consumible, comprobable y mantenible desde una especificaciÃ³n formal.
+JustificaciÃ³n: Esto cumple los RNF de mantenibilidad, facilita pruebas y mejora la calidad del proyecto.
+ADR-021 | La lÃ³gica clÃ­nica bÃ¡sica y la lÃ³gica tÃ©cnica no deben mezclarse en controladores
+Estado: APROBADO
+Contexto: Validaciones clÃ­nicas, cÃ¡lculo de riesgo, analÃ­tica y generaciÃ³n de alertas son reglas de negocio; los controladores solo deben exponer endpoints.
+DecisiÃ³n: Los controladores REST se limitarÃ¡n a recibir solicitudes, validar DTOs y delegar casos de uso o servicios de aplicaciÃ³n.
+Consecuencia: No se permitirÃ¡ lÃ³gica de negocio compleja embebida en controladores.
+JustificaciÃ³n: Esto refuerza arquitectura limpia, mantenibilidad y separaciÃ³n de responsabilidades.
+ADR-022 | El backend adopta monolito modular, no microservicios, en la primera versiÃ³n
+Estado: APROBADO
+Contexto: El sistema tiene mÃºltiples capacidades, pero el alcance acadÃ©mico no justifica complejidad operativa de microservicios.
+DecisiÃ³n: El backend se implementarÃ¡ como monolito modular con separaciÃ³n interna por mÃ³dulos de dominio.
+Consecuencia: Todos los mÃ³dulos vivirÃ¡n en una misma aplicaciÃ³n Spring Boot, con lÃ­mites lÃ³gicos bien definidos.
+JustificaciÃ³n: Esta decisiÃ³n reduce complejidad, simplifica despliegue y es suficiente para el alcance del proyecto.
+ADR-023 | Las estructuras de datos deben usarse con justificaciÃ³n funcional, no de forma ornamental
+Estado: APROBADO
+Contexto: El proyecto debe aplicar estructuras de datos vistas en clase e investigar otras nuevas, pero su inclusiÃ³n debe responder a necesidades reales.
+DecisiÃ³n: Solo se incorporarÃ¡n estructuras de datos cuando aporten valor claro al caso de uso, por ejemplo:
+ArrayList para series temporales
+HashMap para agrupaciones
+HashSet para apoyo de deduplicaciÃ³n
+Deque para ventanas mÃ³viles
+TreeMap para orden cronolÃ³gico
+PriorityQueue para priorizaciÃ³n de eventos crÃ­ticos, si se justifica
+Consecuencia: La documentaciÃ³n tÃ©cnica deberÃ¡ explicar por quÃ© se usa cada estructura.
+JustificaciÃ³n: Esto fortalece la defensa acadÃ©mica y evita diseÃ±o artificial.
+ADR-024 | Los patrones de software deben reflejar necesidades reales del dominio
+Estado: APROBADO
+Contexto: El proyecto debe demostrar patrones de software, pero su uso debe responder al comportamiento del sistema.
+DecisiÃ³n: Se priorizarÃ¡n patrones coherentes con el dominio, tales como:
+Repository
+ServiceLayer
+DTO
+Strategy
+Factory
+Observer/Event-driven
+Builder, donde aplique
+Consecuencia: La implementaciÃ³n y documentaciÃ³n deberÃ¡n justificar patrÃ³n, contexto y beneficio.
+JustificaciÃ³n: Esto da solidez tÃ©cnica al proyecto y evita uso decorativo de patrones.
+SECCIÃ“N 3 â€” CONTRATO DE AGENTES PROGRAMADORES
+Este contrato define quÃ© deben construir los agentes (Codex, OpenCode, etc.) y bajo quÃ© condiciones se considera correcto.
+Un agente NO puede marcar una tarea como completada si no cumple todos los criterios de aceptaciÃ³n aplicables.
+CRITERIOS DE ACEPTACIÃ“N INNEGOCIABLES
+Estos criterios aplican a TODO el sistema. Son obligatorios y verificables.
+CA-01 | SEGURIDAD DE CONTRASEÃ‘AS
+Ninguna contraseÃ±a se almacena en texto plano.
+Se debe usar hashing seguro (BCrypt o equivalente).
+El campo passwordHash nunca debe exponerse en respuestas.
+VerificaciÃ³n:
+Consultar endpoint de usuario â†’ no aparece passwordHash.
+Revisar base de datos â†’ valores no legibles.
+CA-02 | AUTENTICACIÃ“N Y AUTORIZACIÃ“N
+Todos los endpoints de usuario estÃ¡n protegidos con JWT.
+Los endpointsIoT usan autenticaciÃ³n por dispositivo (no JWT de usuario).
+Un usuario solo puede acceder a sus propios datos.
+VerificaciÃ³n:
+Acceso sin token â†’ HTTP 401.
+Usuario A intentando acceder a datos de B â†’ HTTP 403.
+CA-03 | DEDUPLICACIÃ“N DE MEDICIONES
+El sistema nunca debe registrar la misma mediciÃ³n dos veces.
+Se debe usar una clave lÃ³gica o hash de deduplicaciÃ³n.
+VerificaciÃ³n:
+Enviar la misma mediciÃ³n dos veces â†’ solo un registro en BD.
+CA-04 | VALIDACIÃ“N DE MEDICIONES
+Las mediciones fuera de rango no se eliminan, se marcan como invÃ¡lidas.
+VerificaciÃ³n:
+Enviar valor extremo (ej: 9999) â†’ se guarda con isValid = false.
+CA-05 | TRAZABILIDAD COMPLETA
+Cada mediciÃ³n, alerta y predicciÃ³n debe tener:
+fecha de creaciÃ³n
+usuario asociado
+dispositivo (si aplica)
+VerificaciÃ³n:
+Insertar registro â†’ todos los campos se llenan automÃ¡ticamente.
+CA-06 | ALERTAS AUTOMÃTICAS
+El sistema debe generar alertas inmediatamente despuÃ©s de una mediciÃ³n vÃ¡lida.
+VerificaciÃ³n:
+MediciÃ³n < umbral â†’ alerta creada automÃ¡ticamente.
+CA-07 | NO DUPLICACIÃ“N DE ALERTAS CRÃTICAS INMEDIATAS
+No se deben generar mÃºltiples alertas idÃ©nticas consecutivas sin cambio de estado.
+VerificaciÃ³n:
+Enviar 5 mediciones iguales fuera de rango â†’ no mÃ¡s de 1 alerta inmediata.
+CA-08 | CONSULTAS PAGINADAS
+NingÃºn endpoint de listado devuelve listas completas sin paginaciÃ³n.
+VerificaciÃ³n:
+Respuesta incluye:
+totalElements
+totalPages
+currentPage
+CA-09 | INTEGRIDAD DE DATOS
+No se permite inconsistencia entre:
+mediciones
+alertas
+predicciones
+VerificaciÃ³n:
+Cada alerta debe referenciar una mediciÃ³n vÃ¡lida existente.
+CA-10 | IA TRAZABLE
+Cada predicciÃ³n debe guardar:
+score
+nivel de riesgo
+versiÃ³n del modelo
+features usadas
+VerificaciÃ³n:
+Consultar predicciÃ³n â†’ incluye todos los campos.
+CA-11 | ACTUALIZACIÃ“N DEL DASHBOARD
+La interfaz debe reflejar nuevas mediciones sin recargar manualmente.
+VerificaciÃ³n:
+Insertar mediciÃ³n â†’ dashboard se actualiza automÃ¡ticamente o en corto intervalo.
+CA-12 | AUDITORÃA DEL SISTEMA
+Eventos crÃ­ticos deben registrarse:
+login
+mediciÃ³n
+alerta
+predicciÃ³n
+VerificaciÃ³n:
+Ejecutar acciones â†’ aparecen en tabla de auditorÃ­a.
+CASOS DE USO PRINCIPALES
+CU-01 | Registro y monitoreo de glucosa en tiempo real
+Actor: USUARIO + ESP32
+Flujo:
+Usuario registra dispositivo.
+ESP32 envÃ­a mediciÃ³n.
+Backend valida dispositivo.
+Se guarda la mediciÃ³n.
+Se evalÃºan alertas.
+Se actualiza dashboard.
+PostcondiciÃ³n:
+MediciÃ³n almacenada.
+Posible alerta generada.
+UI actualizada.
+Criterio de aceptaciÃ³n:
+Tiempo total < 2 segundos (backend).
+CU-02 | DetecciÃ³n de hipoglucemia
+Actor: Sistema
+Flujo:
+Llega mediciÃ³n.
+Se compara con umbral.
+Se genera alerta.
+PostcondiciÃ³n:
+Alerta persistida.
+Criterio:
+Exactitud segÃºn umbral del usuario.
+CU-03 | Consulta de historial
+Actor: USUARIO
+Flujo:
+Usuario selecciona rango de fechas.
+Backend consulta mediciones.
+Devuelve resultados paginados.
+PostcondiciÃ³n:
+Datos mostrados en frontend.
+CU-04 | AnÃ¡lisis de tendencias
+Actor: USUARIO
+Flujo:
+Usuario selecciona periodo.
+Backend calcula estadÃ­sticas.
+Se muestran grÃ¡ficas.
+PostcondiciÃ³n:
+Tendencias visibles.
+CU-05 | PredicciÃ³n de riesgo (IA)
+Actor: Sistema
+Flujo:
+Se recopilan features.
+Se ejecuta modelo.
+Se genera predicciÃ³n.
+PostcondiciÃ³n:
+PredicciÃ³n almacenada.
+Criterio:
+ClasificaciÃ³n correcta (bajo/medio/alto).
+CU-06 | ComparaciÃ³n de periodos
+Actor: USUARIO
+Flujo:
+Usuario selecciona dos periodos.
+Backend calcula mÃ©tricas.
+Se comparan resultados.
+PostcondiciÃ³n:
+Diferencias visibles.
+CU-07 | GestiÃ³n de dispositivos
+Actor: USUARIO
+Flujo:
+Registrar dispositivo.
+Vincularlo.
+Activar/desactivar.
+PostcondiciÃ³n:
+Dispositivo controlado correctamente.
+CU-08 | AuditorÃ­a del sistema
+Actor: ADMIN
+Flujo:
+Consultar logs.
+Filtrar eventos.
+PostcondiciÃ³n:
+InformaciÃ³n trazable.
+REGLAS TÃ‰CNICAS PARA AGENTES
+RT-01 | NO lÃ³gica en controladores
+Controladores solo reciben request y delegan.
+RT-02 | USO OBLIGATORIO DE DTOs
+Nunca exponer entidades directamente.
+RT-03 | SEPARACIÃ“N POR CAPAS
+domain
+application
+infrastructure
+interfaces
+RT-04 | VALIDACIONES EN BACKEND
+No confiar en el frontend.
+RT-05 | MANEJO GLOBAL DE ERRORES
+Uso de @RestControllerAdvice.
+RT-06 | USO DE REPOSITORY PATTERN
+Acceso a BD solo mediante repositorios.
+RT-07 | USO DE SERVICE LAYER
+Toda lÃ³gica de negocio en servicios.
+RT-08 | EVENTOS INTERNOS (Observer)
+Ejemplo:
+mediciÃ³n â†’ alerta â†’ predicciÃ³n
+RT-09 | TIPADO ESTRICTO EN FRONTEND
+TypeScript obligatorio en todos los componentes.
+RT-10 | API DOCUMENTADA
+OpenAPI obligatorio.
+DEFINICIÃ“N DE "TAREA COMPLETA"
+Una tarea se considera completa SOLO si:
+Cumple todos los criterios de aceptaciÃ³n aplicables
+No rompe ningÃºn ADR
+Pasa pruebas bÃ¡sicas manuales o automÃ¡ticas
+EstÃ¡ documentada mÃ­nimamente
+Puede integrarse sin errores en el sistema
+REGLA FINAL DEL CONTRATO
+Si un agente implementa funcionalidad que no cumple los criterios de aceptaciÃ³n o contradice un ADR, esa implementaciÃ³n se considera invÃ¡lida, incluso si funciona parcialmente.
+SECCIÃ“N 4 â€” ROADMAP TÃ‰CNICO DETALLADO
+Regla de avance:
+No se puede iniciar una tarea si su predecesora no estÃ¡ completada y verificada.
+Las columnas Backend y Frontend avanzan en paralelo dentro de cada fase.
+FASE 1 â€” FUNDAMENTOS (SETUP + AUTENTICACIÃ“N + USUARIOS + DISPOSITIVOS)
+BACKEND
+B1-01 | Setup del proyecto
+Crear proyecto Spring Boot 3.x (Java 21)
+Dependencias:
+Spring Web
+Spring Security
+Spring Data JPA
+PostgreSQL Driver
+Flyway
+Lombok
+Validation
+Configurar estructura en capas (ADR-005)
+Criterio de aceptaciÃ³n:
+mvnspring-boot:run levanta sin errores
+Estructura de paquetes definida correctamente
+B1-02 | ConfiguraciÃ³n de base de datos
+Integrar PostgreSQL
+Configurar Flyway
+Crear migraciÃ³n inicial:
+users
+user_profile
+devices
+Criterio:
+flyway:migrate ejecuta correctamente
+Tablas creadas en BD
+B1-03 | MÃ³dulo de autenticaciÃ³n (IAM)
+UserEntity
+UserProfileEntity
+Hash de contraseÃ±a (BCrypt)
+JWT (access + refresh)
+Endpoints:
+/auth/register
+/auth/login
+/auth/refresh
+Criterio:
+Login devuelve JWT vÃ¡lido
+Password no visible en respuestas
+B1-04 | Seguridad
+Configurar SecurityFilterChain
+Filtro JWT
+Roles bÃ¡sicos (USER, ADMIN)
+Criterio:
+Endpoint protegido â†’ 401 sin token
+Endpoint con token vÃ¡lido â†’ 200
+B1-05 | GestiÃ³n de dispositivos
+DeviceEntity
+RelaciÃ³n con usuario
+GeneraciÃ³n de API Key
+Endpoints:
+registrar
+vincular
+desvincular
+activar/desactivar
+Criterio:
+Dispositivo se registra correctamente
+Se puede vincular a usuario
+FRONTEND
+F1-01 | Setup del proyecto
+Next.js + TypeScript
+Configurar estructura base
+Configurar Axios
+Criterio:
+Proyecto corre en localhost
+F1-02 | AutenticaciÃ³n UI
+Login / Register
+Formulario con validaciÃ³n
+Guardado de JWT
+Criterio:
+Usuario puede iniciar sesiÃ³n
+F1-03 | Guards
+AuthGuard
+ProtecciÃ³n de rutas
+Criterio:
+Usuario no autenticado â†’ redirecciÃ³n a login
+F1-04 | GestiÃ³n de dispositivos UI
+Pantalla para:
+registrar dispositivo
+ver lista
+activar/desactivar
+FASE 2 â€” INGESTA DE DATOS + MEDICIONES + ALERTAS
+BACKEND
+B2-01 | EndpointIoT (ESP32)
+POST /api/iot/measurements
+ValidaciÃ³n de:
+deviceId
+apiKey
+DTO de mediciÃ³n
+Criterio:
+MediciÃ³n vÃ¡lida â†’ HTTP 200
+B2-02 | Modelo de mediciones
+GlucoseMeasurementEntity
+Campos:
+valor
+fechas
+usuario
+dispositivo
+validaciÃ³n
+Criterio:
+MediciÃ³n se guarda correctamente
+B2-03 | DeduplicaciÃ³n
+Hash Ãºnico de mediciÃ³n
+ValidaciÃ³n previa a persistencia
+Criterio:
+Duplicados no se insertan
+B2-04 | ValidaciÃ³n fisiolÃ³gica
+Rangos aceptables
+Campo isValid
+B2-05 | Sistema de alertas
+AlertEntity
+Tipos:
+hipoglucemia
+hiperglucemia
+GeneraciÃ³n automÃ¡tica
+Criterio:
+MediciÃ³n fuera de rango â†’ alerta creada
+B2-06 | Historial de mediciones
+Endpoint:
+/measurements
+Filtros por fecha
+PaginaciÃ³n
+FRONTEND
+F2-01 | Dashboard inicial
+Mostrar:
+Ãºltima mediciÃ³n
+alertas
+F2-02 | Historial de mediciones
+Tabla con filtros por fecha
+F2-03 | Alertas UI
+Lista de alertas
+Marcar como leÃ­das
+F2-04 | ActualizaciÃ³n automÃ¡tica
+Polling cada X segundos
+FASE 3 â€” ANALÃTICA DESCRIPTIVA
+BACKEND
+B3-01 | EstadÃ­sticas
+promedio
+mÃ­nimo
+mÃ¡ximo
+desviaciÃ³n estÃ¡ndar
+B3-02 | Agrupaciones temporales
+dÃ­a
+semana
+mes
+aÃ±o
+B3-03 | Tendencias
+cÃ¡lculo de pendiente
+B3-04 | Comparaciones
+periodo actual vs anterior
+FRONTEND
+F3-01 | GrÃ¡ficas
+Chart.js o similar
+lÃ­neas de tiempo
+F3-02 | KPIs
+promedio
+variabilidad
+tiempo en rango
+F3-03 | Comparaciones visuales
+FASE 4 â€” INTELIGENCIA ARTIFICIAL
+BACKEND
+B4-01 | Featureengineering
+promedio mÃ³vil
+desviaciÃ³n
+frecuencia
+episodios crÃ­ticos
+B4-02 | Modelo de clasificaciÃ³n
+riesgo:
+bajo
+medio
+alto
+B4-03 | Persistencia de predicciones
+RiskPredictionEntity
+B4-04 | Historial de predicciones
+B4-05 | MÃ©tricas del modelo
+accuracy
+F1
+AUC
+FRONTEND
+F4-01 | Vista de predicciÃ³n
+riesgo actual
+F4-02 | Historial
+F4-03 | ExplicaciÃ³n del resultado
+FASE 5 â€” AUDITORÃA + OPTIMIZACIÃ“N + DESPLIEGUE
+BACKEND
+B5-01 | AuditorÃ­a
+AuditLogEntity
+B5-02 | Logs de eventos
+B5-03 | OptimizaciÃ³n de consultas
+Ã­ndices en BD
+B5-04 | DockerizaciÃ³n
+Dockerfilebackend
+FRONTEND
+F5-01 | Mejoras UX/UI
+F5-02 | OptimizaciÃ³n rendimiento
+F5-03 | Despliegue
+Vercel
+INFRAESTRUCTURA
+I5-01 | Backenddeployment
+Cloud Run
+I5-02 | Base de datos
+PostgreSQL (Supabase/Neon)
+I5-03 | Variables de entorno
+REGLA FINAL DEL ROADMAP
+No se puede avanzar a IA (FASE 4) si:
+no existe historial de mediciones
+no hay alertas funcionando
+no hay analÃ­tica bÃ¡sica
+DEFINICIÃ“N DE FASE COMPLETA
+Una fase se considera completa si:
+Backend y frontend funcionan integrados
+Los endpoints responden correctamente
+Se cumplen los criterios de aceptaciÃ³n
+Se puede demostrar funcionalmente
+SECCIÃ“N 5 â€” MODELO DE DATOS (DER + ESTRUCTURA RELACIONAL)
+Esta secciÃ³n define el modelo relacional oficial del sistema GlycoWatch.
+Su objetivo es establecer una base de datos consistente, trazable, normalizada y alineada con los requerimientos funcionales, no funcionales y ADRs del proyecto.
+El diseÃ±o prioriza:
+integridad referencial,
+trazabilidad clÃ­nica y tÃ©cnica,
+soporte eficiente para consultas temporales,
+deduplicaciÃ³n de mediciones,
+persistencia de alertas y predicciones,
+y evoluciÃ³n futura del sistema hacia nuevos sensores o modelos IA.
+5.1 Diagrama Entidad-RelaciÃ³n (DER) â€” Mermaid
+Mermaid
+erDiagram
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+%% USUARIOS Y PERFIL
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+USERS {
+BIGSERIAL id PK
+VARCHAR email UK "NOT NULL"
+VARCHAR password_hash "NOT NULL"
+VARCHAR role "NOT NULL"
+BOOLEAN active "NOT NULL DEFAULT TRUE"
+TIMESTAMP created_at "NOT NULL"
+VARCHAR created_by "NOT NULL"
+TIMESTAMP updated_at
+VARCHAR updated_by
+}
+USER_PROFILE {
+BIGSERIAL id PK
+BIGINT user_id FK "UNIQUE NOT NULL"
+VARCHAR full_name
+DATE birth_date
+DECIMAL hypoglycemia_threshold "NOT NULL"
+DECIMAL hyperglycemia_threshold "NOT NULL"
+VARCHAR timezone
+TIMESTAMP created_at "NOT NULL"
+VARCHAR created_by "NOT NULL"
+TIMESTAMP updated_at
+VARCHAR updated_by
+}
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+%% DISPOSITIVOS
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+DEVICES {
+BIGSERIAL id PK
+VARCHAR unique_identifier UK "NOT NULL"
+VARCHAR name
+VARCHAR status "NOT NULL"
+VARCHAR auth_key_hash "NOT NULL"
+BOOLEAN active "NOT NULL DEFAULT TRUE"
+TIMESTAMP last_seen_at
+TIMESTAMP created_at "NOT NULL"
+VARCHAR created_by "NOT NULL"
+TIMESTAMP updated_at
+VARCHAR updated_by
+}
+USER_DEVICE_LINK {
+BIGSERIAL id PK
+BIGINT user_id FK "NOT NULL"
+BIGINT device_id FK "NOT NULL"
+BOOLEAN active "NOT NULL DEFAULT TRUE"
+TIMESTAMP linked_at "NOT NULL"
+TIMESTAMP unlinked_at
+TIMESTAMP created_at "NOT NULL"
+VARCHAR created_by "NOT NULL"
+TIMESTAMP updated_at
+VARCHAR updated_by
+}
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+%% MEDICIONES
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+GLUCOSE_MEASUREMENTS {
+BIGSERIAL id PK
+BIGINT user_id FK "NOT NULL"
+BIGINT device_id FK "NOT NULL"
+DECIMAL glucose_value "NOT NULL"
+TIMESTAMP measured_at "NOT NULL"
+TIMESTAMP received_at "NOT NULL"
+VARCHAR origin "NOT NULL"
+BOOLEAN is_valid "NOT NULL DEFAULT TRUE"
+VARCHAR invalid_reason
+VARCHAR deduplication_hash UK "NOT NULL"
+VARCHAR source_event_id
+TIMESTAMP created_at "NOT NULL"
+VARCHAR created_by "NOT NULL"
+TIMESTAMP updated_at
+VARCHAR updated_by
+}
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+%% ALERTAS
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ALERTS {
+BIGSERIAL id PK
+BIGINT user_id FK "NOT NULL"
+BIGINT measurement_id FK "NOT NULL"
+VARCHAR type "NOT NULL"
+VARCHAR severity "NOT NULL"
+VARCHAR status "NOT NULL"
+TEXT message "NOT NULL"
+BOOLEAN is_read "NOT NULL DEFAULT FALSE"
+TIMESTAMP read_at
+TIMESTAMP created_at "NOT NULL"
+VARCHAR created_by "NOT NULL"
+TIMESTAMP updated_at
+VARCHAR updated_by
+}
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+%% IA â€” VERSIONADO Y PREDICCIONES
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+MODEL_VERSIONS {
+BIGSERIAL id PK
+VARCHAR version_code UK "NOT NULL"
+VARCHAR model_name "NOT NULL"
+VARCHAR algorithm_type "NOT NULL"
+TEXT description
+BOOLEAN active "NOT NULL DEFAULT TRUE"
+TIMESTAMP trained_at
+TIMESTAMP deployed_at
+TIMESTAMP created_at "NOT NULL"
+VARCHAR created_by "NOT NULL"
+TIMESTAMP updated_at
+VARCHAR updated_by
+}
+RISK_PREDICTIONS {
+BIGSERIAL id PK
+BIGINT user_id FK "NOT NULL"
+BIGINT model_version_id FK "NOT NULL"
+DECIMAL risk_score "NOT NULL"
+VARCHAR risk_level "NOT NULL"
+TIMESTAMP calculated_at "NOT NULL"
+JSON features_snapshot "NOT NULL"
+TIMESTAMP created_at "NOT NULL"
+VARCHAR created_by "NOT NULL"
+TIMESTAMP updated_at
+VARCHAR updated_by
+}
+MODEL_METRICS {
+BIGSERIAL id PK
+BIGINT model_version_id FK "NOT NULL"
+VARCHAR metric_name "NOT NULL"
+DECIMAL metric_value "NOT NULL"
+VARCHAR dataset_name
+TIMESTAMP evaluated_at "NOT NULL"
+TIMESTAMP created_at "NOT NULL"
+VARCHAR created_by "NOT NULL"
+}
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+%% AUDITORÃA
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+AUDIT_LOGS {
+BIGSERIAL id PK
+VARCHAR event_type "NOT NULL"
+VARCHAR actor_type "NOT NULL"
+BIGINT actor_id
+BIGINT user_id FK
+BIGINT device_id FK
+TEXT description "NOT NULL"
+JSON event_payload
+VARCHAR ip_address
+TIMESTAMP created_at "NOT NULL"
+}
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+%% RELACIONES
+%% â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+USERS ||--|| USER_PROFILE : "tiene"
+USERS ||--o{ USER_DEVICE_LINK : "vincula"
+DEVICES ||--o{ USER_DEVICE_LINK : "se vincula a"
+USERS ||--o{ GLUCOSE_MEASUREMENTS : "posee"
+DEVICES ||--o{ GLUCOSE_MEASUREMENTS : "envia"
+USERS ||--o{ ALERTS : "recibe"
+GLUCOSE_MEASUREMENTS ||--o{ ALERTS : "genera"
+USERS ||--o{ RISK_PREDICTIONS : "tiene"
+MODEL_VERSIONS ||--o{ RISK_PREDICTIONS : "produce"
+MODEL_VERSIONS ||--o{ MODEL_METRICS : "se evalua con"
+USERS ||--o{ AUDIT_LOGS : "relaciona"
+DEVICES ||--o{ AUDIT_LOGS : "relaciona"
+5.2 DescripciÃ³n general del modelo
+El modelo de datos se divide en 6 dominios relacionales principales:
+Usuarios y perfil
+Dispositivos IoT
+Mediciones de glucosa
+Alertas
+Predicciones y versionado del modelo IA
+AuditorÃ­a
+Cada dominio responde a una necesidad concreta del sistema:
+identificar usuarios y sus configuraciones clÃ­nicas,
+registrar y autenticar dispositivos,
+almacenar historial temporal de mediciones,
+detectar y persistir episodios crÃ­ticos,
+conservar trazabilidad de predicciones de IA,
+registrar eventos para seguimiento tÃ©cnico y depuraciÃ³n.
+5.3 Entidades del dominio
+5.3.1 users
+Representa a los usuarios autenticados del sistema.
+Responsabilidades:
+identidad principal del paciente o administrador,
+autenticaciÃ³n y autorizaciÃ³n,
+asociaciÃ³n con mediciones, alertas y predicciones.
+Campos clave:
+id: identificador interno.
+email: correo Ãºnico de autenticaciÃ³n.
+password_hash: contraseÃ±a cifrada.
+role: rol del usuario (USER, ADMIN).
+active: estado lÃ³gico de la cuenta.
+Restricciones:
+email Ãºnico.
+password_hash nunca se expone a frontend.
+eliminaciÃ³n lÃ³gica mediante active.
+5.3.2 user_profile
+Representa informaciÃ³n complementaria del usuario.
+Responsabilidades:
+configuraciÃ³n clÃ­nica individual,
+parÃ¡metros personalizados para generaciÃ³n de alertas.
+Campos clave:
+user_id: relaciÃ³n uno a uno con users.
+hypoglycemia_threshold
+hyperglycemia_threshold
+timezone
+Restricciones:
+un usuario solo puede tener un perfil.
+los umbrales deben ser obligatorios.
+5.3.3 devices
+Representa dispositivos ESP32 registrados.
+Responsabilidades:
+identificaciÃ³n Ãºnica del hardware,
+autenticaciÃ³n tÃ©cnica,
+control de activaciÃ³n/revocaciÃ³n.
+Campos clave:
+unique_identifier: identificador Ãºnico del dispositivo.
+auth_key_hash: hash de la clave tÃ©cnica.
+status: estado operativo (REGISTERED, ACTIVE, REVOKED, DISABLED).
+last_seen_at: Ãºltima comunicaciÃ³n conocida.
+Restricciones:
+identificador Ãºnico obligatorio.
+credenciales separadas de los usuarios.
+revocaciÃ³n lÃ³gica, no borrado fÃ­sico.
+5.3.4 user_device_link
+Representa la vinculaciÃ³n entre usuario y dispositivo.
+Responsabilidades:
+permitir trazabilidad histÃ³rica de asociaciones,
+soportar vinculaciÃ³n y desvinculaciÃ³n sin perder historial.
+Campos clave:
+user_id
+device_id
+linked_at
+unlinked_at
+active
+JustificaciÃ³n de diseÃ±o: Se usa tabla intermedia en vez de una FK directa fija porque:
+permite conservar historial de relaciones,
+soporta cambios de asignaciÃ³n,
+facilita auditorÃ­a y evoluciÃ³n futura.
+5.3.5 glucose_measurements
+Entidad central del sistema. Almacena cada mediciÃ³n recibida.
+Responsabilidades:
+guardar el valor glucÃ©mico,
+conservar origen y trazabilidad,
+distinguir registros vÃ¡lidos e invÃ¡lidos,
+prevenir duplicaciÃ³n.
+Campos clave:
+user_id
+device_id
+glucose_value
+measured_at
+received_at
+origin
+is_valid
+invalid_reason
+deduplication_hash
+source_event_id
+Restricciones:
+deduplication_hash Ãºnico.
+measured_at y received_at obligatorios.
+mediciones invÃ¡lidas se conservan, no se eliminan.
+ObservaciÃ³n: Esta entidad serÃ¡ una de las mÃ¡s consultadas y por eso deberÃ¡ tener Ã­ndices temporales compuestos.
+5.3.6 alerts
+Representa alertas generadas automÃ¡ticamente.
+Responsabilidades:
+persistir eventos crÃ­ticos,
+permitir consulta histÃ³rica,
+marcar estado de lectura.
+Campos clave:
+user_id
+measurement_id
+type: tipo de alerta (HYPOGLYCEMIA, HYPERGLYCEMIA)
+severity
+status
+message
+is_read
+read_at
+Restricciones:
+cada alerta debe estar asociada a una mediciÃ³n.
+la lectura no elimina la alerta.
+5.3.7 model_versions
+Representa el versionado formal del modelo IA.
+Responsabilidades:
+controlar quÃ© modelo produjo una predicciÃ³n,
+soportar evoluciÃ³n y trazabilidad.
+Campos clave:
+version_code
+model_name
+algorithm_type
+trained_at
+deployed_at
+active
+JustificaciÃ³n: No se debe guardar texto libre de versiÃ³n dentro de la predicciÃ³n sin referencia estructurada; por eso existe esta tabla.
+5.3.8 risk_predictions
+Representa cada predicciÃ³n de riesgo calculada.
+Responsabilidades:
+almacenar score,
+clasificar nivel de riesgo,
+conservar snapshot de features.
+Campos clave:
+user_id
+model_version_id
+risk_score
+risk_level
+calculated_at
+features_snapshot
+Restricciones:
+toda predicciÃ³n debe estar asociada a un modelo versionado.
+no se permiten predicciones sin trazabilidad.
+5.3.9 model_metrics
+Representa mÃ©tricas de desempeÃ±o del modelo.
+Responsabilidades:
+conservar evaluaciÃ³n formal del modelo,
+respaldar reproducibilidad del componente IA.
+Campos clave:
+model_version_id
+metric_name
+metric_value
+dataset_name
+evaluated_at
+Ejemplos:
+accuracy
+f1_score
+auc
+precision
+recall
+5.3.10 audit_logs
+Representa eventos relevantes del sistema.
+Responsabilidades:
+soporte tÃ©cnico,
+seguimiento,
+depuraciÃ³n,
+trazabilidad operativa.
+Campos clave:
+event_type
+actor_type
+actor_id
+user_id
+device_id
+description
+event_payload
+ip_address
+created_at
+Ejemplos de eventos:
+login exitoso
+login fallido
+mediciÃ³n registrada
+mediciÃ³n invalidada
+alerta generada
+predicciÃ³n ejecutada
+dispositivo revocado
+5.4 Relaciones principales del modelo
+Las relaciones mÃ¡s importantes son:
+users 1:1 user_profile
+users1:Nuser_device_link
+devices1:Nuser_device_link
+users1:Nglucose_measurements
+devices1:Nglucose_measurements
+glucose_measurements1:Nalerts
+users1:Nalerts
+users1:Nrisk_predictions
+model_versions1:Nrisk_predictions
+model_versions1:Nmodel_metrics
+Esto permite responder consultas como:
+historial de mediciones de un usuario,
+mediciones de un dispositivo especÃ­fico,
+Ãºltimas alertas generadas,
+predicciÃ³n mÃ¡s reciente,
+trazabilidad del modelo usado,
+eventos de auditorÃ­a por actor o tipo.
+5.5 Reglas de integridad y restricciones de negocio
+RI-01 | Un usuario no puede tener mÃ¡s de un perfil
+Se garantiza mediante restricciÃ³n UNIQUE sobre user_profile.user_id.
+RI-02 | Un dispositivo debe tener identificador Ãºnico global
+Se garantiza mediante restricciÃ³n UNIQUE sobre devices.unique_identifier.
+RI-03 | Una mediciÃ³n no puede persistirse sin usuario y dispositivo asociados
+user_id y device_id son obligatorios.
+RI-04 | No se permiten duplicados lÃ³gicos de mediciones
+Se garantiza mediante restricciÃ³n UNIQUE sobre deduplication_hash.
+RI-05 | Una alerta no existe sin una mediciÃ³n que la origine
+alerts.measurement_id referencia obligatoriamente una mediciÃ³n existente.
+RI-06 | Toda predicciÃ³n debe referenciar una versiÃ³n de modelo existente
+risk_predictions.model_version_id es obligatorio y referencial.
+RI-07 | Las mÃ©tricas del modelo no existen aisladas
+Toda mÃ©trica debe pertenecer a una versiÃ³n de modelo.
+RI-08 | La auditorÃ­a es append-only a nivel lÃ³gico
+Los registros de auditorÃ­a no se actualizan ni se borran dentro de la operaciÃ³n normal del sistema.
+5.6 Ãndices recomendados
+Para cumplir rendimiento y consultas por fechas, el esquema debe incluir como mÃ­nimo estos Ã­ndices:
+En glucose_measurements
+Ã­ndice por (user_id, measured_at DESC)
+Ã­ndice por (device_id, measured_at DESC)
+Ã­ndice por deduplication_hash
+Ã­ndice por is_valid
+Ã­ndice opcional por (user_id, is_valid, measured_at DESC)
+En alerts
+Ã­ndice por (user_id, created_at DESC)
+Ã­ndice por (user_id, is_read, created_at DESC)
+Ã­ndice por measurement_id
+En risk_predictions
+Ã­ndice por (user_id, calculated_at DESC)
+Ã­ndice por model_version_id
+En audit_logs
+Ã­ndice por (event_type, created_at DESC)
+Ã­ndice por (user_id, created_at DESC)
+Ã­ndice por (device_id, created_at DESC)
+5.7 Consideraciones de normalizaciÃ³n
+El modelo propuesto mantiene una normalizaciÃ³n apropiada para este proyecto:
+separaciÃ³n entre autenticaciÃ³n (users) y configuraciÃ³n clÃ­nica (user_profile)
+separaciÃ³n entre dispositivo (devices) y vinculaciÃ³n (user_device_link)
+separaciÃ³n entre mediciones, alertas y predicciones
+versionado aislado del modelo IA
+Se admite desnormalizaciÃ³n controlada Ãºnicamente en:
+features_snapshot dentro de risk_predictions
+event_payload dentro de audit_logs
+Ambos casos son deliberados por trazabilidad y flexibilidad.
+5.8 Consideraciones para implementaciÃ³n JPA / Spring Boot
+A nivel backend, este modelo se traducirÃ¡ normalmente a:
+UserEntity
+UserProfileEntity
+DeviceEntity
+UserDeviceLinkEntity
+GlucoseMeasurementEntity
+AlertEntity
+ModelVersionEntity
+RiskPredictionEntity
+ModelMetricEntity
+AuditLogEntity
+Recomendaciones de implementaciÃ³n:
+usar @OneToOne entre UserEntity y UserProfileEntity
+usar @OneToMany / @ManyToOne en relaciones de historial
+usar @Enumerated(EnumType.STRING) para campos como:
+role
+status
+type
+severity
+risk_level
+auditar entidades con clase base comÃºn
+no exponer entidades directamente al frontend; usar DTOs
+5.9 Posibles extensiones futuras del modelo
+La arquitectura de datos permite crecer hacia:
+nuevos tipos de sensores biomÃ©dicos,
+registros de insulina, alimentaciÃ³n o actividad fÃ­sica,
+notificaciones push,
+integraciÃ³n con profesionales de salud,
+mÃºltiples modelos predictivos,
+explicaciones mÃ¡s detalladas del resultado IA.
+Esto serÃ­a posible sin rediseÃ±ar el nÃºcleo del sistema, especialmente gracias a:
+model_versions
+risk_predictions
+audit_logs
+y la separaciÃ³n entre usuario, dispositivo y mediciÃ³n.
+5.10 ConclusiÃ³n de la secciÃ³n
+El modelo de datos de GlycoWatch estÃ¡ diseÃ±ado para sostener un sistema de monitoreo glucÃ©mico con integraciÃ³n IoT, analÃ­tica descriptiva, alertas automÃ¡ticas e inteligencia artificial trazable.
+Su estructura relacional permite mantener consistencia, rendimiento, seguridad y capacidad de evoluciÃ³n, cumpliendo tanto con los requerimientos funcionales como con los no funcionales del proyecto.
+SECCIÃ“N 6 â€” CONTRATOS DE API
+Esta secciÃ³n define los contratos oficiales de comunicaciÃ³n del sistema GlycoWatch.
+Todos los endpoints deben cumplir con:
+formato JSON consistente
+autenticaciÃ³n adecuada (JWT o Device Key)
+respuestas estructuradas
+manejo uniforme de errores
+FORMATO GENERAL DE RESPUESTA
+Todas las respuestas siguen esta estructura:
+Respuesta exitosa
+JSON
+{
+"success": true,
+"message": "OperaciÃ³n exitosa",
+"data": {},
+"timestamp": "2026-03-21T12:00:00Z",
+"path": "/api/v1/..."
+}
+Respuesta de error
+JSON
+{
+"success": false,
+"error": "ERROR_CODE",
+"message": "DescripciÃ³n del error",
+"timestamp": "2026-03-21T12:00:00Z",
+"path": "/api/v1/..."
+}
+6.1 AUTENTICACIÃ“N
+POST /api/v1/auth/register
+Request
+JSON
+{
+"email": "usuario@email.com",
+"password": "123456",
+"fullName": "Juan PÃ©rez"
+}
+Response (200)
+JSON
+{
+"success": true,
+"message": "Usuario registrado correctamente",
+"data": {
+"userId": 1,
+"email": "usuario@email.com"
+}
+}
+POST /api/v1/auth/login
+Request
+JSON
+{
+"email": "usuario@email.com",
+"password": "123456"
+}
+Response (200)
+JSON
+{
+"success": true,
+"message": "Login exitoso",
+"data": {
+"accessToken": "jwt_token",
+"refreshToken": "refresh_token",
+"user": {
+"id": 1,
+"email": "usuario@email.com",
+"role": "USER"
+}
+}
+}
+POST /api/v1/auth/refresh
+Request
+JSON
+{
+"refreshToken": "refresh_token"
+}
+Response
+JSON
+{
+"success": true,
+"data": {
+"accessToken": "new_token"
+}
+}
+6.2 DISPOSITIVOS
+POST /api/v1/devices
+Request
+JSON
+{
+"name": "ESP32 Sala",
+"identifier": "ESP32-ABC-123"
+}
+Response
+JSON
+{
+"success": true,
+"data": {
+"deviceId": 10,
+"apiKey": "generated_key"
+}
+}
+POST /api/v1/devices/{id}/link
+Response
+JSON
+{
+"success": true,
+"message": "Dispositivo vinculado"
+}
+PUT /api/v1/devices/{id}/toggle
+Response
+JSON
+{
+"success": true,
+"message": "Estado actualizado"
+}
+6.3 INGESTA DE MEDICIONES (ESP32)
+POST /api/v1/iot/measurements
+Headers
+Http
+X-DEVICE-ID: ESP32-ABC-123
+X-DEVICE-KEY: secret_key
+Request
+JSON
+{
+"glucoseValue": 120.5,
+"measuredAt": "2026-03-21T10:00:00Z",
+"origin": "esp32"
+}
+Response (200)
+JSON
+{
+"success": true,
+"message": "MediciÃ³n registrada",
+"data": {
+"measurementId": 5001,
+"isValid": true
+}
+}
+Error (401)
+JSON
+{
+"success": false,
+"error": "DEVICE_NOT_AUTHORIZED",
+"message": "Credenciales invÃ¡lidas"
+}
+Error (409 â€” duplicado)
+JSON
+{
+"success": false,
+"error": "DUPLICATE_MEASUREMENT",
+"message": "La mediciÃ³n ya fue registrada"
+}
+6.4 MEDICIONES
+GET /api/v1/measurements
+Queryparams
+?page=0&size=10&from=2026-03-01&to=2026-03-21
+Response
+JSON
+{
+"success": true,
+"data": {
+"content": [
+{
+"id": 1,
+"glucoseValue": 110,
+"measuredAt": "2026-03-21T10:00:00Z",
+"isValid": true
+}
+],
+"totalElements": 100,
+"totalPages": 10,
+"currentPage": 0
+}
+}
+GET /api/v1/measurements/latest
+JSON
+{
+"success": true,
+"data": {
+"glucoseValue": 115,
+"measuredAt": "2026-03-21T11:00:00Z"
+}
+}
+6.5 ALERTAS
+GET /api/v1/alerts
+JSON
+{
+"success": true,
+"data": [
+{
+"id": 1,
+"type": "HYPOGLYCEMIA",
+"message": "Nivel bajo detectado",
+"isRead": false
+}
+]
+}
+PUT /api/v1/alerts/{id}/read
+JSON
+{
+"success": true,
+"message": "Alerta marcada como leÃ­da"
+}
+6.6 ANALÃTICA
+GET /api/v1/analytics/dashboard
+JSON
+{
+"success": true,
+"data": {
+"average": 120,
+"min": 80,
+"max": 180,
+"stdDev": 15,
+"timeInRange": 75
+}
+}
+GET /api/v1/analytics/trends
+JSON
+{
+"success": true,
+"data": {
+"trend": "UPWARD"
+}
+}
+6.7 INTELIGENCIA ARTIFICIAL
+GET /api/v1/predictions/latest
+JSON
+{
+"success": true,
+"data": {
+"riskLevel": "MEDIUM",
+"riskScore": 0.65,
+"calculatedAt": "2026-03-21T12:00:00Z"
+}
+}
+GET /api/v1/predictions/history
+JSON
+{
+"success": true,
+"data": [
+{
+"riskLevel": "LOW",
+"riskScore": 0.2,
+"date": "2026-03-20"
+}
+]
+}
+6.8 AUDITORÃA
+GET /api/v1/audit
+JSON
+{
+"success": true,
+"data": [
+{
+"eventType": "LOGIN",
+"description": "Usuario iniciÃ³ sesiÃ³n",
+"timestamp": "2026-03-21T10:00:00Z"
+}
+]
+}
+REGLAS IMPORTANTES DE LA API
+RA-01
+Todos los endpoints protegidos requieren JWT excepto /iot/**
+RA-02
+EndpointsIoT usan autenticaciÃ³n por headers (no JWT)
+RA-03
+Todos los endpoints de listado deben ser paginados
+RA-04
+Nunca exponer entidades directamente
+RA-05
+Errores deben ser consistentes
+RA-06
+Fechas en formato ISO 8601
+CONCLUSIÃ“N
+Este contrato API define completamente cÃ³mo:
+el ESP32 envÃ­a datos
+el backend procesa
+el frontend consume
+SECCIÃ“N 7 â€” ARQUITECTURA DEL SISTEMA
+Esta secciÃ³n describe la arquitectura global de GlycoWatch, incluyendo:
+componentes principales
+interacciÃ³n entre capas
+flujo de datos
+integraciÃ³n con ESP32
+despliegue en la nube
+La arquitectura sigue un enfoque de:
+Frontend + Backend + Base de Datos + IoT + MÃ³dulo IA
+cumpliendo con los ADR definidos previamente.
+7.1 VISIÃ“N GENERAL DE LA ARQUITECTURA
+El sistema estÃ¡ compuesto por cuatro capas principales:
+Plaintext
+[ ESP32 (IoT) ]
+â†“
+[ Backend (Spring Boot) ]
+â†“
+[ Base de Datos (PostgreSQL) ]
+â†‘
+[ Frontend (Next.js) ]
+7.2 DIAGRAMA DE ARQUITECTURA GENERAL
+Plaintext
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚        FRONTEND            â”‚
+â”‚   Next.js + TypeScript     â”‚
+â”‚                            â”‚
+â”‚  -Dashboard               â”‚
+â”‚  - Historial               â”‚
+â”‚  - Alertas                 â”‚
+â”‚  - Predicciones IA         â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+â”‚ HTTPS (JWT)
+â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚        BACKEND             â”‚
+â”‚     Spring Boot (Java)     â”‚
+â”‚                            â”‚
+â”‚  -Auth & Users            â”‚
+â”‚  -Devices                 â”‚
+â”‚  -Measurements            â”‚
+â”‚  -Alerts                 â”‚
+â”‚  -Analytics               â”‚
+â”‚  - AI Module               â”‚
+â”‚  - Audit Logs              â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+â”‚
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â–¼â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”       â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚    PostgreSQL DB     â”‚       â”‚     AI Engine        â”‚
+â”‚                      â”‚       â”‚ (StrategyPattern)   â”‚
+â”‚ - Users              â”‚       â”‚                      â”‚
+â”‚ - Devices            â”‚       â”‚ - Featurebuilder    â”‚
+â”‚ - Measurements       â”‚       â”‚ - Riskmodel         â”‚
+â”‚ - Alerts             â”‚       â”‚ - Metrics            â”‚
+â”‚ - Predictions        â”‚       â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+â”‚ - Audit Logs         â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+â–²
+â”‚ HTTPS (DeviceAuth)
+â”‚
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚        ESP32         â”‚
+â”‚                      â”‚
+â”‚ - Sensor lectura     â”‚
+â”‚ - EnvÃ­o mediciones   â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+7.3 COMPONENTES DEL SISTEMA
+7.3.1 FRONTEND (Next.js)
+Responsabilidades:
+Interfaz de usuario
+VisualizaciÃ³n de datos
+Consumo de API
+AutenticaciÃ³n (JWT)
+MÃ³dulos principales:
+Dashboard
+Historial
+Alertas
+Predicciones IA
+GestiÃ³n de dispositivos
+Perfil de usuario
+7.3.2 BACKEND (Spring Boot)
+Es el nÃºcleo del sistema.
+Responsabilidades:
+lÃ³gica de negocio
+seguridad
+procesamiento de datos
+ejecuciÃ³n de IA
+exposiciÃ³n de API REST
+SubmÃ³dulos internos
+Auth Module
+User Module
+Device Module
+Measurement Module
+Alert Module
+Analytics Module
+AI Module
+Audit Module
+7.3.3 BASE DE DATOS (PostgreSQL)
+Responsabilidades:
+persistencia de datos
+integridad referencial
+consultas eficientes
+7.3.4 ESP32 (IoT)
+Responsabilidades:
+capturar mediciones
+enviar datos al backend
+autenticarse con credenciales seguras
+7.3.5 MÃ“DULO DE IA
+Responsabilidades:
+construir features
+ejecutar modelo de riesgo
+generar predicciones
+7.4 ARQUITECTURA INTERNA DEL BACKEND
+El backend sigue una arquitectura en capas:
+Plaintext
+interfaces (controllers)
+â†“
+application (use cases)
+â†“
+domain (entities + business rules)
+â†“
+infrastructure (DB, security, external)
+ExplicaciÃ³n
+Interfaces: recibe requests HTTP
+Application: orquesta casos de uso
+Domain: lÃ³gica pura del negocio
+Infrastructure: base de datos, seguridad, integraciÃ³n
+7.5 FLUJO DE DATOS PRINCIPAL
+Flujo 1 â€” Registro de mediciÃ³n
+Plaintext
+ESP32
+â†“
+API /iot/measurements
+â†“
+ValidaciÃ³n dispositivo
+â†“
+ValidaciÃ³n duplicado
+â†“
+ValidaciÃ³n fisiolÃ³gica
+â†“
+Guardar en BD
+â†“
+Generar alertas
+â†“
+Ejecutar IA (opcional)
+â†“
+Actualizar frontend
+Flujo 2 â€” Consulta de usuario
+Plaintext
+Frontend
+â†“
+API REST
+â†“
+Backend
+â†“
+Consulta BD
+â†“
+Procesamiento
+â†“
+Respuesta JSON
+â†“
+Render UI
+Flujo 3 â€” PredicciÃ³n IA
+Plaintext
+Backend
+â†“
+Recuperar historial
+â†“
+Construir features
+â†“
+Ejecutar modelo
+â†“
+Guardar resultado
+â†“
+Responder al frontend
+7.6 ARQUITECTURA DE DESPLIEGUE
+Plaintext
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚         VERCEL             â”‚
+â”‚       (Frontend)           â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+â”‚ HTTPS
+â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚        CLOUD RUN           â”‚
+â”‚      (Spring Boot)         â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+â”‚
+â–¼
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚     POSTGRESQL CLOUD       â”‚
+â”‚   (Supabase / Neon)        â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+7.7 PROTOCOLOS DE COMUNICACIÃ“N
+Frontend â†’ Backend
+HTTPS REST
+JWT
+ESP32 â†’ Backend
+HTTPS REST
+API Key
+Backend â†’ DB
+JDBC / JPA
+7.8 SEGURIDAD EN LA ARQUITECTURA
+JWT para usuarios
+API Key para dispositivos
+HTTPS obligatorio
+aislamiento de datos por usuario
+validaciÃ³n en backend
+7.9 ESCALABILIDAD
+La arquitectura permite:
+agregar nuevos sensores
+cambiar modelo IA
+escalar backend horizontalmente
+separar IA en microservicio futuro
+7.10 DECISIONES CLAVE DE ARQUITECTURA
+Monolito modular (no microservicios)
+REST sobre MQTT (simplicidad)
+IA desacoplada
+PostgreSQL relacional
+Next.js para frontend
+7.11 CONCLUSIÃ“N
+La arquitectura de GlycoWatch:
+integra IoT + Web + IA
+es modular y mantenible
+cumple todos los requerimientos
+es escalable y defendible acadÃ©micamente
+SECCIÃ“N 8 â€” PATRONES DE DISEÃ‘O APLICADOS
+Esta secciÃ³n describe los patrones de diseÃ±o utilizados en GlycoWatch, justificando su uso en funciÃ³n del dominio del problema, la arquitectura definida y los requerimientos del sistema.
+El uso de patrones no es ornamental:
+cada patrÃ³n responde a una necesidad concreta del sistema.
+8.1 VISIÃ“N GENERAL
+El sistema utiliza una combinaciÃ³n de patrones estructurales, creacionales y de comportamiento:
+Tipo
+Patrones
+Creacionales
+Factory
+Estructurales
+DTO, Repository
+Comportamiento
+Strategy, Observer, ServiceLayer
+8.2 REPOSITORY PATTERN
+UbicaciÃ³n
+Capa: infrastructure.persistence
+Ejemplo: GlucoseMeasurementRepository
+Problema que resuelve
+Separar la lÃ³gica de acceso a datos de la lÃ³gica de negocio.
+AplicaciÃ³n en el sistema
+Todas las entidades tienen su repositorio:
+UserRepository
+DeviceRepository
+MeasurementRepository
+AlertRepository
+PredictionRepository
+Beneficios
+desacopla dominio de base de datos
+facilita testing
+permite cambiar tecnologÃ­a de persistencia
+Ejemplo conceptual
+Java
+interface MeasurementRepository {
+Optional<Measurement> findByDeduplicationHash(String hash);
+List<Measurement> findByUserId(Long userId);
+}
+8.3 SERVICE LAYER PATTERN
+UbicaciÃ³n
+Capa: application.service
+Problema que resuelve
+Evitar lÃ³gica de negocio en controladores.
+AplicaciÃ³n
+Toda la lÃ³gica se concentra en servicios:
+MeasurementService
+AlertService
+PredictionService
+DeviceService
+Ejemplo
+Java
+publicvoidprocessMeasurement(MeasurementDTOdto) {
+validateDevice(dto);
+validateDuplicate(dto);
+saveMeasurement(dto);
+generateAlerts(dto);
+}
+Beneficios
+centraliza reglas de negocio
+mejora mantenibilidad
+facilita pruebas
+8.4 DTO (DATA TRANSFER OBJECT)
+UbicaciÃ³n
+application.dto
+Problema
+No exponer entidades directamente al frontend.
+AplicaciÃ³n
+MeasurementResponseDTO
+AlertResponseDTO
+PredictionResponseDTO
+Beneficios
+seguridad
+control de datos
+desacoplamiento
+8.5 STRATEGY PATTERN (IA)
+UbicaciÃ³n
+domain.ai
+Problema
+Permitir cambiar el modelo IA sin modificar el sistema.
+AplicaciÃ³n
+Interfaz:
+Java
+interface RiskPredictionStrategy {
+PredictionResultpredict(Featuresfeatures);
+}
+Implementaciones:
+SimpleRuleBasedStrategy
+MLModelStrategy (futuro)
+Beneficios
+reemplazo de modelo sin romper cÃ³digo
+flexibilidad
+cumplimiento de RNF-13
+8.6 FACTORY PATTERN
+Problema
+Crear instancias del modelo IA sin acoplar cÃ³digo.
+AplicaciÃ³n
+Java
+classPredictionStrategyFactory {
+publicstaticRiskPredictionStrategygetStrategy(Stringtype) {
+if(type.equals("RULE")) return new SimpleStrategy();
+if(type.equals("ML")) return new MLStrategy();
+}
+}
+Beneficios
+encapsula creaciÃ³n de objetos
+facilita extensiÃ³n
+8.7 OBSERVER PATTERN (EVENT-DRIVEN)
+Problema
+Una mediciÃ³n dispara mÃºltiples acciones:
+guardar
+generar alerta
+ejecutar IA
+auditorÃ­a
+AplicaciÃ³n
+Evento:
+Java
+MeasurementCreatedEvent
+Listeners:
+AlertListener
+PredictionListener
+AuditListener
+Flujo
+Plaintext
+MediciÃ³n registrada
+â†“
+Evento publicado
+â†“
+MÃºltiples listeners reaccionan
+Beneficios
+desacoplamiento
+extensibilidad
+separaciÃ³n de responsabilidades
+8.8 BUILDER PATTERN (RESPUESTAS COMPLEJAS)
+Problema
+ConstrucciÃ³n de respuestas complejas como dashboard.
+AplicaciÃ³n
+Java
+DashboardResponse.builder()
+.average(avg)
+.min(min)
+.max(max)
+.build();
+Beneficios
+claridad
+legibilidad
+evita constructores complejos
+8.9 ADAPTER PATTERN (INTEGRACIÃ“N ESP32)
+Problema
+El ESP32 envÃ­a datos en formato externo.
+AplicaciÃ³n
+Se transforma requestIoT â†’ modelo interno:
+Java
+MeasurementAdapter.fromIoTRequest(request);
+Beneficios
+desacopla formato externo
+facilita cambios futuros
+8.10 FACADE PATTERN (ANALÃTICA)
+Problema
+El dashboard requiere mÃºltiples cÃ¡lculos.
+AplicaciÃ³n
+Java
+AnalyticsFacade.getDashboard(userId);
+Internamente llama a:
+statsService
+alertService
+measurementService
+Beneficios
+simplifica API
+centraliza lÃ³gica compleja
+8.11 SINGLETON (CONFIGURACIÃ“N)
+AplicaciÃ³n
+configuraciÃ³n de seguridad
+configuraciÃ³n de IA
+Nota
+Spring maneja singletons automÃ¡ticamente.
+8.12 RESUMEN DE PATRONES
+PatrÃ³n
+Uso
+Repository
+acceso a datos
+ServiceLayer
+lÃ³gica de negocio
+DTO
+comunicaciÃ³n
+Strategy
+IA
+Factory
+creaciÃ³n IA
+Observer
+eventos
+Builder
+respuestas
+Adapter
+ESP32
+Facade
+dashboard
+8.13 JUSTIFICACIÃ“N GENERAL
+Los patrones seleccionados permiten:
+mantener bajo acoplamiento
+facilitar cambios futuros
+cumplir requisitos acadÃ©micos
+estructurar correctamente el sistema
+8.14 CONCLUSIÃ“N
+GlycoWatch aplica patrones de diseÃ±o de forma coherente con su arquitectura, asegurando:
+mantenibilidad
+escalabilidad
+claridad
+robustez
+y cumpliendo completamente los requisitos del proyecto.}
+SECCIÃ“N 9 â€” ESTRUCTURAS DE DATOS APLICADAS
+Esta secciÃ³n describe las estructuras de datos utilizadas en GlycoWatch, justificando su uso en funciÃ³n de los requerimientos del sistema, la eficiencia en el procesamiento de datos y la lÃ³gica del dominio.
+El uso de estructuras de datos en este proyecto no es decorativo; cada una responde a una necesidad concreta como:
+procesamiento de series temporales
+detecciÃ³n de duplicados
+anÃ¡lisis estadÃ­stico
+generaciÃ³n de alertas
+optimizaciÃ³n de consultas
+9.1 VISIÃ“N GENERAL
+El sistema utiliza principalmente estructuras de datos propias del lenguaje Java, optimizadas para:
+acceso rÃ¡pido
+ordenamiento temporal
+cÃ¡lculo estadÃ­stico
+procesamiento incremental
+Estructuras utilizadas
+Estructura
+Uso principal
+ArrayList
+almacenamiento de series de mediciones
+HashMap
+agrupaciÃ³n y conteo
+HashSet
+deduplicaciÃ³n
+Deque
+ventanas mÃ³viles
+TreeMap
+orden temporal
+PriorityQueue
+detecciÃ³n de eventos crÃ­ticos
+List
+visualizaciÃ³n y transporte de datos
+9.2 ARRAYLIST â€” SERIES TEMPORALES
+Uso
+historial de mediciones
+datos para grÃ¡ficas
+procesamiento estadÃ­stico
+Ejemplo
+Java
+List<Measurement> measurements = new ArrayList<>();
+JustificaciÃ³n
+Las mediciones son una secuencia ordenada en el tiempo, y ArrayList permite:
+acceso rÃ¡pido O(1)
+iteraciÃ³n eficiente
+compatibilidad con grÃ¡ficos
+AplicaciÃ³n real
+cÃ¡lculo de promedio
+cÃ¡lculo de desviaciÃ³n estÃ¡ndar
+renderizado de grÃ¡ficas en frontend
+9.3 HASHMAP â€” AGRUPACIONES Y MÃ‰TRICAS
+Uso
+agrupaciÃ³n por:
+dÃ­a
+semana
+mes
+conteo de eventos
+Ejemplo
+Java
+Map<LocalDate, List<Measurement>> grouped = new HashMap<>();
+JustificaciÃ³n
+Permite acceso rÃ¡pido O(1) para:
+agrupar mediciones
+calcular estadÃ­sticas por periodo
+AplicaciÃ³n
+RF-18 (agrupaciones)
+RF-24 (comparaciones)
+9.4 HASHSET â€” DEDUPLICACIÃ“N
+Uso
+detecciÃ³n de mediciones duplicadas
+Ejemplo
+Java
+Set<String> hashes = new HashSet<>();
+JustificaciÃ³n
+Permite verificar duplicados en O(1).
+AplicaciÃ³n
+RF-13 (evitar duplicados)
+ADR-006 (deduplicaciÃ³n obligatoria)
+9.5 DEQUE (DOUBLE ENDED QUEUE) â€” VENTANAS MÃ“VILES
+Uso
+cÃ¡lculo de promedio mÃ³vil
+anÃ¡lisis de tendencia reciente
+Ejemplo
+Java
+Deque<Double> window = new ArrayDeque<>();
+JustificaciÃ³n
+Permite:
+insertar/eliminar en ambos extremos
+mantener tamaÃ±o fijo
+AplicaciÃ³n
+featureengineering IA
+anÃ¡lisis de cambios recientes
+9.6 TREEMAP â€” ORDEN TEMPORAL
+Uso
+mantener datos ordenados por fecha
+Ejemplo
+Java
+TreeMap<LocalDateTime, Measurement> timeline = new TreeMap<>();
+JustificaciÃ³n
+mantiene orden natural automÃ¡ticamente
+permite consultas por rango
+AplicaciÃ³n
+historial cronolÃ³gico
+tendencias
+consultas por fechas
+9.7 PRIORITY QUEUE â€” EVENTOS CRÃTICOS
+Uso
+identificar valores extremos
+priorizar alertas
+Ejemplo
+Java
+PriorityQueue<Measurement> pq = new PriorityQueue<>(Comparator.comparing(Measurement::getValue));
+JustificaciÃ³n
+Permite:
+acceso rÃ¡pido a mÃ¡ximos/mÃ­nimos
+priorizaciÃ³n eficiente
+AplicaciÃ³n
+detecciÃ³n de picos
+anÃ¡lisis de eventos crÃ­ticos
+9.8 LIST â€” TRANSPORTE DE DATOS
+Uso
+respuestas API
+DTOs
+JustificaciÃ³n
+estÃ¡ndar en Java
+interoperable con JSON
+9.9 RELACIÃ“N CON BASE DE DATOS
+Aunque PostgreSQL maneja estructuras internas (Ã­ndices B-Tree), el backend usa estructuras en memoria para:
+procesamiento previo
+analÃ­tica
+IA
+Ejemplo
+Plaintext
+BD â†’ List â†’ procesamiento â†’ respuesta
+9.10 COMPLEJIDAD Y EFICIENCIA
+Estructura
+Complejidad
+ArrayList
+O(1) acceso
+HashMap
+O(1) promedio
+HashSet
+O(1)
+Deque
+O(1)
+TreeMap
+O(log n)
+PriorityQueue
+O(log n)
+Esto garantiza:
+rendimiento en tiempo real
+escalabilidad
+eficiencia en IA
+9.11 JUSTIFICACIÃ“N ACADÃ‰MICA
+Las estructuras seleccionadas cumplen:
+uso real en el sistema
+alineaciÃ³n con requerimientos
+optimizaciÃ³n de procesos
+claridad conceptual
+No se incluyeron estructuras innecesarias como:
+grafos complejos
+Ã¡rboles manuales
+porque el dominio no lo requiere directamente.
+9.12 INTEGRACIÃ“N CON IA
+Las estructuras permiten construir features:
+promedio â†’ ArrayList
+variabilidad â†’ ArrayList
+tendencia â†’ Deque
+eventos crÃ­ticos â†’ PriorityQueue
+agrupaciÃ³n â†’ HashMap
+9.13 CONCLUSIÃ“N
+El sistema GlycoWatch utiliza estructuras de datos de forma:
+eficiente
+coherente
+justificada
+permitiendo:
+procesamiento de datos en tiempo real
+anÃ¡lisis estadÃ­stico
+generaciÃ³n de alertas
+soporte al modelo de IA
+cumpliendo completamente con los requerimientos del proyecto.
