@@ -4,11 +4,13 @@ import com.glycowatch.backend.interfaces.dto.response.ErrorResponse;
 import com.glycowatch.backend.interfaces.dto.response.ValidationErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -35,11 +37,9 @@ public class GlobalExceptionHandler {
             MethodArgumentNotValidException ex,
             HttpServletRequest request
     ) {
-        List<ValidationErrorResponse.FieldViolation> violations = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(this::toFieldViolation)
-                .toList();
+        List<ValidationErrorResponse.FieldViolation> violations = new ArrayList<>();
+        violations.addAll(ex.getBindingResult().getFieldErrors().stream().map(this::toFieldViolation).toList());
+        violations.addAll(ex.getBindingResult().getGlobalErrors().stream().map(this::toGlobalViolation).toList());
 
         ValidationErrorResponse response = ValidationErrorResponse.builder()
                 .success(false)
@@ -102,6 +102,13 @@ public class GlobalExceptionHandler {
         return ValidationErrorResponse.FieldViolation.builder()
                 .field(fieldError.getField())
                 .message(fieldError.getDefaultMessage())
+                .build();
+    }
+
+    private ValidationErrorResponse.FieldViolation toGlobalViolation(ObjectError objectError) {
+        return ValidationErrorResponse.FieldViolation.builder()
+                .field(objectError.getObjectName())
+                .message(objectError.getDefaultMessage())
                 .build();
     }
 }
