@@ -2,7 +2,6 @@ package com.glycowatch.backend.infrastructure.security;
 
 import com.glycowatch.backend.domain.user.UserEntity;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -37,7 +36,7 @@ public class JwtTokenProvider {
             Claims claims = parseClaims(token);
             String tokenType = claims.get(TOKEN_TYPE_CLAIM, String.class);
             return expectedType.name().equals(tokenType);
-        } catch (ExpiredJwtException | JwtException | IllegalArgumentException ex) {
+        } catch (JwtException | IllegalArgumentException ex) {
             return false;
         }
     }
