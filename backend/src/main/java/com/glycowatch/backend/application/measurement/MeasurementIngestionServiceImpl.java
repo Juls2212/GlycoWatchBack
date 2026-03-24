@@ -1,5 +1,6 @@
 package com.glycowatch.backend.application.measurement;
 
+import com.glycowatch.backend.application.alert.AlertService;
 import com.glycowatch.backend.domain.device.DeviceEntity;
 import com.glycowatch.backend.domain.device.UserDeviceLinkEntity;
 import com.glycowatch.backend.domain.measurement.GlucoseMeasurementEntity;
@@ -34,6 +35,7 @@ public class MeasurementIngestionServiceImpl implements MeasurementIngestionServ
     private final UserDeviceLinkRepository userDeviceLinkRepository;
     private final GlucoseMeasurementRepository glucoseMeasurementRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AlertService alertService;
 
     @Override
     @Transactional
@@ -84,6 +86,7 @@ public class MeasurementIngestionServiceImpl implements MeasurementIngestionServ
                 .build();
 
         GlucoseMeasurementEntity saved = glucoseMeasurementRepository.save(measurement);
+        alertService.generateForMeasurement(saved);
 
         device.setLastSeenAt(now);
         device.setUpdatedAt(now);
