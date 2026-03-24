@@ -45,8 +45,7 @@ public class MeasurementIngestionServiceImpl implements MeasurementIngestionServ
         String deviceIdentifier = validateHeader(deviceIdentifierHeader, "X-DEVICE-ID");
         String deviceKey = validateHeader(deviceKeyHeader, "X-DEVICE-KEY");
 
-        DeviceEntity device = deviceRepository.findByUniqueIdentifierIgnoreCaseAndActiveTrue(deviceIdentifier)
-                .orElseThrow(() -> new ApiException("DEVICE_NOT_AUTHORIZED", "Device credentials are invalid.", HttpStatus.UNAUTHORIZED));
+        DeviceEntity device = resolveDevice(deviceIdentifier);
 
         if (!passwordEncoder.matches(deviceKey, device.getAuthKeyHash())) {
             throw new ApiException("DEVICE_NOT_AUTHORIZED", "Device credentials are invalid.", HttpStatus.UNAUTHORIZED);
@@ -101,6 +100,19 @@ public class MeasurementIngestionServiceImpl implements MeasurementIngestionServ
         return value.trim();
     }
 
+    private DeviceEntity resolveDevice(String deviceHeaderValue) {
+        try {
+            Long deviceId = Long.parseLong(deviceHeaderValue);
+            return deviceRepository.findByIdAndActiveTrue(deviceId)
+                    .orElseGet(() -> deviceRepository.findByUniqueIdentifierIgnoreCaseAndActiveTrue(deviceHeaderValue)
+                            .orElseThrow(() -> new ApiException("DEVICE_NOT_AUTHORIZED", "Device credentials are invalid.", HttpStatus.UNAUTHORIZED)));
+        } catch (NumberFormatException ignored) {
+            // Header is not numeric id; continue with identifier lookup.
+        }
+        return deviceRepository.findByUniqueIdentifierIgnoreCaseAndActiveTrue(deviceHeaderValue)
+                .orElseThrow(() -> new ApiException("DEVICE_NOT_AUTHORIZED", "Device credentials are invalid.", HttpStatus.UNAUTHORIZED));
+    }
+
     private String normalizeUnit(String rawUnit) {
         String normalized = rawUnit == null ? "" : rawUnit.trim();
         if (normalized.equalsIgnoreCase(DEFAULT_UNIT)) {
@@ -133,4 +145,3 @@ public class MeasurementIngestionServiceImpl implements MeasurementIngestionServ
     private record ValidationResult(boolean valid, String invalidReason) {
     }
 }
-
