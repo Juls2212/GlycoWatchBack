@@ -4,6 +4,8 @@ C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\application\device\DeviceServiceImpl.java
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\application\measurement\MeasurementIngestionService.java
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\application\measurement\MeasurementIngestionServiceImpl.java
+C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\application\measurement\MeasurementQueryService.java
+C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\application\measurement\MeasurementQueryServiceImpl.java
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\application\profile\ProfileService.java
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\application\profile\ProfileServiceImpl.java
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\domain\device\DeviceEntity.java
@@ -44,6 +46,9 @@ C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\interfaces\dto\device\ToggleDeviceResponseDto.java
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\interfaces\dto\measurement\IngestMeasurementRequestDto.java
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\interfaces\dto\measurement\IngestMeasurementResponseDto.java
+C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\interfaces\dto\measurement\LatestMeasurementResponseDto.java
+C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\interfaces\dto\measurement\MeasurementPageResponseDto.java
+C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\interfaces\dto\measurement\MeasurementResponseDto.java
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\interfaces\dto\profile\ProfileResponseDto.java
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\interfaces\dto\profile\ThresholdRangeValidator.java
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\interfaces\dto\profile\UpdateProfileRequestDto.java
@@ -56,4 +61,5 @@ C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\interfaces\rest\AuthController.java
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\interfaces\rest\DeviceController.java
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\interfaces\rest\IotMeasurementController.java
+C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\interfaces\rest\MeasurementController.java
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\interfaces\rest\ProfileController.java
