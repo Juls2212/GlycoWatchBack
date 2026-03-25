@@ -29,17 +29,37 @@ public class DashboardServiceImpl implements DashboardService {
         UserEntity user = resolveActiveUser(authenticatedEmail);
         Long userId = user.getId();
 
-        GlucoseMeasurementEntity latest = glucoseMeasurementRepository
-                .findFirstByUserIdAndIsValidTrueOrderByMeasuredAtDesc(userId)
-                .orElse(null);
+        GlucoseMeasurementEntity latest = null;
+        BigDecimal average = BigDecimal.ZERO;
+        BigDecimal min = BigDecimal.ZERO;
+        BigDecimal max = BigDecimal.ZERO;
+        long alertsCount = 0L;
 
-        Instant since = Instant.now().minus(7, ChronoUnit.DAYS);
-        Object[] recentStats = glucoseMeasurementRepository.getRecentStats(userId, since);
+        try {
+            latest = glucoseMeasurementRepository
+                    .findFirstByUserIdAndIsValidTrueOrderByMeasuredAtDesc(userId)
+                    .orElse(null);
+        } catch (RuntimeException ignored) {
+            latest = null;
+        }
 
-        BigDecimal average = castToBigDecimal(recentStats, 0);
-        BigDecimal min = castToBigDecimal(recentStats, 1);
-        BigDecimal max = castToBigDecimal(recentStats, 2);
-        long alertsCount = alertRepository.countByUserId(userId);
+        try {
+            Instant since = Instant.now().minus(7, ChronoUnit.DAYS);
+            Object[] recentStats = glucoseMeasurementRepository.getRecentStats(userId, since);
+            average = castToBigDecimalOrZero(recentStats, 0);
+            min = castToBigDecimalOrZero(recentStats, 1);
+            max = castToBigDecimalOrZero(recentStats, 2);
+        } catch (RuntimeException ignored) {
+            average = BigDecimal.ZERO;
+            min = BigDecimal.ZERO;
+            max = BigDecimal.ZERO;
+        }
+
+        try {
+            alertsCount = alertRepository.countByUserId(userId);
+        } catch (RuntimeException ignored) {
+            alertsCount = 0L;
+        }
 
         DashboardResponseDto.LatestMeasurementDto latestDto = latest == null
                 ? null
@@ -58,14 +78,21 @@ public class DashboardServiceImpl implements DashboardService {
                 .orElseThrow(() -> new ApiException("USER_NOT_ACTIVE", "Authenticated user is not active.", HttpStatus.UNAUTHORIZED));
     }
 
-    private BigDecimal castToBigDecimal(Object[] stats, int index) {
+    private BigDecimal castToBigDecimalOrZero(Object[] stats, int index) {
         if (stats == null || stats.length <= index || stats[index] == null) {
-            return null;
+            return BigDecimal.ZERO;
         }
-        if (stats[index] instanceof BigDecimal value) {
-            return value;
+        Object value = stats[index];
+        if (value instanceof BigDecimal decimalValue) {
+            return decimalValue;
         }
-        return new BigDecimal(stats[index].toString());
+        if (value instanceof Number numberValue) {
+            return BigDecimal.valueOf(numberValue.doubleValue());
+        }
+        try {
+            return new BigDecimal(value.toString());
+        } catch (RuntimeException ignored) {
+            return BigDecimal.ZERO;
+        }
     }
 }
-
