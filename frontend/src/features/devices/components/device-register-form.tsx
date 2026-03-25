@@ -46,7 +46,7 @@ export function DeviceRegisterForm({
       <form className="devices-form" onSubmit={(event) => void handleSubmit(event)}>
         <label className="field">
           <span>Nombre del dispositivo</span>
-          <input type="text" value={name} onChange={(event) => setName(event.target.value)} placeholder="Ej. Sensor cocina" />
+          <input type="text" value={name} onChange={(event) => setName(event.target.value)} placeholder="Ej. Sensor 1" />
         </label>
 
         <label className="field">

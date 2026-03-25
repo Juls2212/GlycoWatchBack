@@ -7,7 +7,6 @@ const navItems = [
   { href: "/dashboard", label: "Panel" },
   { href: "/devices", label: "Dispositivos" },
   { href: "/measurements", label: "Mediciones" },
-  { href: "/profile", label: "Perfil" },
   { href: "/alerts", label: "Alertas" }
 ];
 

@@ -37,3 +37,6 @@ export async function createManualMeasurement(payload: ManualMeasurementPayload)
   await apiClient.post(`${API_ENDPOINTS.measurements.base}/manual`, payload);
 }
 
+export async function deleteMeasurement(measurementId: number): Promise<void> {
+  await apiClient.delete(`${API_ENDPOINTS.measurements.base}/${measurementId}`);
+}

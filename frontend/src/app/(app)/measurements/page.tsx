@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { Section } from "@/components/ui/section";
-import { fetchLatestMeasurement, fetchMeasurements } from "@/features/measurements/api";
+import { deleteMeasurement, fetchLatestMeasurement, fetchMeasurements } from "@/features/measurements/api";
 import { LatestMeasurement, MeasurementItem, MeasurementsFilters } from "@/features/measurements/types";
 import { LatestMeasurementCard } from "@/features/measurements/components/latest-measurement-card";
 import { MeasurementsTable } from "@/features/measurements/components/measurements-table";
 import { ManualMeasurementForm } from "@/features/measurements/components/manual-measurement-form";
+import { HttpError } from "@/types/api";
 
 const PAGE_SIZE = 10;
 
@@ -19,10 +20,13 @@ export default function MeasurementsPage() {
   const [draftFrom, setDraftFrom] = useState("");
   const [draftTo, setDraftTo] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const loadData = async (page: number, activeFilters: MeasurementsFilters) => {
     setError(null);
+    setSuccess(null);
     try {
       const [latest, pageData] = await Promise.all([
         fetchLatestMeasurement(),
@@ -54,6 +58,7 @@ export default function MeasurementsPage() {
   }, []);
 
   const onApplyFilters = async () => {
+    setSuccess(null);
     const nextFilters: MeasurementsFilters = {
       from: draftFrom || undefined,
       to: draftTo || undefined
@@ -65,6 +70,7 @@ export default function MeasurementsPage() {
   };
 
   const onClearFilters = async () => {
+    setSuccess(null);
     setDraftFrom("");
     setDraftTo("");
     const clean: MeasurementsFilters = {};
@@ -76,13 +82,38 @@ export default function MeasurementsPage() {
 
   const onPageChange = async (targetPage: number) => {
     if (targetPage < 0 || targetPage >= totalPages || targetPage === currentPage) return;
+    setSuccess(null);
     setIsLoading(true);
     await loadData(targetPage, filters);
     setIsLoading(false);
   };
 
   const onManualCreated = async () => {
+    setSuccess("Medición manual agregada correctamente.");
     await loadData(currentPage, filters);
+  };
+
+  const onDeleteMeasurement = async (measurementId: number) => {
+    const confirmed = window.confirm("¿Seguro que deseas eliminar esta medición?");
+    if (!confirmed) return;
+
+    setError(null);
+    setSuccess(null);
+    setDeletingId(measurementId);
+    try {
+      await deleteMeasurement(measurementId);
+      await loadData(currentPage, filters);
+      setSuccess("Medición eliminada correctamente.");
+    } catch (err) {
+      if (err instanceof HttpError && (err.status === 404 || err.status === 405)) {
+        setError("La eliminación todavía no está disponible en el servidor.");
+      } else {
+        const message = err instanceof Error ? err.message : "No se pudo eliminar la medición.";
+        setError(message);
+      }
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   return (
@@ -119,7 +150,14 @@ export default function MeasurementsPage() {
       </Section>
 
       <Section title="Historial de mediciones" subtitle="Resultados paginados y ordenados por fecha">
-        <MeasurementsTable measurements={measurements} isLoading={isLoading} error={error} />
+        {success ? <p className="success-text">{success}</p> : null}
+        <MeasurementsTable
+          measurements={measurements}
+          isLoading={isLoading}
+          error={error}
+          deletingId={deletingId}
+          onDelete={onDeleteMeasurement}
+        />
 
         <div className="pagination-wrap">
           <button
@@ -146,4 +184,3 @@ export default function MeasurementsPage() {
     </div>
   );
 }
-
