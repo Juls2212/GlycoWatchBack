@@ -10,10 +10,19 @@ type Props = {
 
 export function ManualMeasurementForm({ onCreated }: Props) {
   const [glucoseValue, setGlucoseValue] = useState("");
-  const [measuredAt, setMeasuredAt] = useState("");
+  const [measuredDate, setMeasuredDate] = useState("");
+  const [measuredTime, setMeasuredTime] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  const fillCurrentDateTime = () => {
+    const now = new Date();
+    const date = now.toISOString().slice(0, 10);
+    const time = now.toTimeString().slice(0, 5);
+    setMeasuredDate(date);
+    setMeasuredTime(time);
+  };
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -25,20 +34,28 @@ export function ManualMeasurementForm({ onCreated }: Props) {
       setError("Ingresa un valor de glucosa válido.");
       return;
     }
-    if (!measuredAt) {
+    if (!measuredDate || !measuredTime) {
       setError("Selecciona fecha y hora de medición.");
       return;
     }
 
     setIsSubmitting(true);
     try {
+      const measuredAt = new Date(`${measuredDate}T${measuredTime}`);
+      if (Number.isNaN(measuredAt.getTime())) {
+        setError("La fecha y hora ingresadas no son válidas.");
+        setIsSubmitting(false);
+        return;
+      }
+
       await createManualMeasurement({
         glucoseValue: parsedValue,
         unit: "mg/dL",
-        measuredAt: new Date(measuredAt).toISOString()
+        measuredAt: measuredAt.toISOString()
       });
       setGlucoseValue("");
-      setMeasuredAt("");
+      setMeasuredDate("");
+      setMeasuredTime("");
       setSuccess("Medición guardada correctamente.");
       await onCreated();
     } catch (err) {
@@ -65,8 +82,13 @@ export function ManualMeasurementForm({ onCreated }: Props) {
         </label>
 
         <label className="field">
-          <span>Fecha y hora de medición</span>
-          <input type="datetime-local" value={measuredAt} onChange={(event) => setMeasuredAt(event.target.value)} />
+          <span>Fecha de medición</span>
+          <input type="date" value={measuredDate} onChange={(event) => setMeasuredDate(event.target.value)} />
+        </label>
+
+        <label className="field">
+          <span>Hora de medición</span>
+          <input type="time" value={measuredTime} onChange={(event) => setMeasuredTime(event.target.value)} />
         </label>
 
         <label className="field">
@@ -78,6 +100,9 @@ export function ManualMeasurementForm({ onCreated }: Props) {
         {success ? <p className="success-text">{success}</p> : null}
 
         <div className="manual-actions">
+          <button type="button" className="ghost-button" onClick={fillCurrentDateTime} disabled={isSubmitting}>
+            Usar hora actual
+          </button>
           <button type="submit" className="primary-button" disabled={isSubmitting}>
             {isSubmitting ? "Guardando..." : "Registrar medición"}
           </button>
@@ -86,4 +111,3 @@ export function ManualMeasurementForm({ onCreated }: Props) {
     </Card>
   );
 }
-
