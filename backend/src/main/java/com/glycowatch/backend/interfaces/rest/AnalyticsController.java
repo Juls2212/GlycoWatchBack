@@ -1,8 +1,10 @@
 package com.glycowatch.backend.interfaces.rest;
 
 import com.glycowatch.backend.application.analytics.DashboardService;
+import com.glycowatch.backend.application.analytics.RiskAnalysisService;
 import com.glycowatch.backend.interfaces.dto.analytics.ChartPointDto;
 import com.glycowatch.backend.interfaces.dto.analytics.DashboardResponseDto;
+import com.glycowatch.backend.interfaces.dto.analytics.RiskAnalysisResponseDto;
 import com.glycowatch.backend.interfaces.dto.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AnalyticsController {
 
     private final DashboardService dashboardService;
+    private final RiskAnalysisService riskAnalysisService;
 
     @GetMapping("/dashboard")
     @Operation(summary = "Get simple dashboard analytics")
@@ -53,6 +56,24 @@ public class AnalyticsController {
                 ApiResponse.<List<ChartPointDto>>builder()
                         .success(true)
                         .message("Chart data retrieved successfully.")
+                        .data(data)
+                        .timestamp(Instant.now())
+                        .path(httpRequest.getRequestURI())
+                        .build()
+        );
+    }
+
+    @GetMapping("/risk")
+    @Operation(summary = "Get current risk analysis")
+    public ResponseEntity<ApiResponse<RiskAnalysisResponseDto>> getRiskAnalysis(
+            Authentication authentication,
+            HttpServletRequest httpRequest
+    ) {
+        RiskAnalysisResponseDto data = riskAnalysisService.getRiskAnalysis(authentication.getName());
+        return ResponseEntity.ok(
+                ApiResponse.<RiskAnalysisResponseDto>builder()
+                        .success(true)
+                        .message("Risk analysis retrieved successfully.")
                         .data(data)
                         .timestamp(Instant.now())
                         .path(httpRequest.getRequestURI())

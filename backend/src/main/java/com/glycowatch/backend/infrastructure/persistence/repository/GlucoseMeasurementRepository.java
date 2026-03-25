@@ -2,6 +2,7 @@ package com.glycowatch.backend.infrastructure.persistence.repository;
 
 import com.glycowatch.backend.domain.measurement.GlucoseMeasurementEntity;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +36,8 @@ public interface GlucoseMeasurementRepository extends JpaRepository<GlucoseMeasu
     );
 
     Optional<GlucoseMeasurementEntity> findFirstByUserIdAndIsValidTrueOrderByMeasuredAtDesc(Long userId);
+
+    List<GlucoseMeasurementEntity> findTop20ByUserIdAndIsValidTrueOrderByMeasuredAtDesc(Long userId);
 
     @Query("""
             SELECT AVG(m.glucoseValue), MIN(m.glucoseValue), MAX(m.glucoseValue)

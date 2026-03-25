@@ -2,6 +2,11 @@ C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\application\alert\AlertServiceImpl.java
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\application\analytics\DashboardService.java
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\application\analytics\DashboardServiceImpl.java
+C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\application\analytics\risk\RiskAnalysisContext.java
+C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\application\analytics\risk\RiskAnalyzer.java
+C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\application\analytics\risk\RuleBasedRiskAnalyzer.java
+C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\application\analytics\RiskAnalysisService.java
+C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\application\analytics\RiskAnalysisServiceImpl.java
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\application\auth\AuthService.java
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\application\auth\AuthServiceImpl.java
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\application\device\DeviceService.java
@@ -41,6 +46,7 @@ C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\interfaces\dto\alert\AlertResponseDto.java
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\interfaces\dto\analytics\ChartPointDto.java
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\interfaces\dto\analytics\DashboardResponseDto.java
+C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\interfaces\dto\analytics\RiskAnalysisResponseDto.java
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\interfaces\dto\auth\AuthTokensDto.java
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\interfaces\dto\auth\LoginRequestDto.java
 C:\Users\ASUS\Desktop\4 semestre\ProyectoFinal PS ES\GlyCowatch\backend\src\main\java\com\glycowatch\backend\interfaces\dto\auth\LoginResponseDto.java
