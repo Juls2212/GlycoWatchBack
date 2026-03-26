@@ -21,8 +21,58 @@ import {
   translateTrend
 } from "@/features/dashboard/risk-text";
 
+const RECENT_ALERT_WINDOW_HOURS = 76;
+
 function formatMetric(value: number): string {
   return value.toLocaleString("es-CO", { maximumFractionDigits: 1 });
+}
+
+type BannerData = {
+  variant: "critical" | "warning";
+  message: string;
+  key: string;
+} | null;
+
+function isRecentAlert(alert: AlertItem): boolean {
+  const createdAt = new Date(alert.createdAt).getTime();
+  if (Number.isNaN(createdAt)) return false;
+  const windowMs = RECENT_ALERT_WINDOW_HOURS * 60 * 60 * 1000;
+  return Date.now() - createdAt <= windowMs;
+}
+
+function resolveBannerData(risk: RiskAnalysis | null, alerts: AlertItem[]): BannerData {
+  if (alerts.length === 0) return null;
+
+  const unreadAlerts = alerts.filter((alert) => !alert.isRead);
+  const recentAlerts = alerts.filter(isRecentAlert);
+  const shouldShow = unreadAlerts.length > 0 || recentAlerts.length > 0;
+  if (!shouldShow) return null;
+
+  const hasHighSignals =
+    risk?.riskLevel === "HIGH" ||
+    risk?.currentStatus === "HIGH" ||
+    unreadAlerts.some((alert) => alert.type === "HIGH_GLUCOSE");
+
+  const latestAlertTimestamp = alerts
+    .map((alert) => new Date(alert.createdAt).getTime())
+    .filter((value) => !Number.isNaN(value))
+    .sort((a, b) => b - a)[0] ?? 0;
+
+  const key = `${latestAlertTimestamp}|${unreadAlerts.length}|${recentAlerts.length}`;
+
+  if (hasHighSignals) {
+    return {
+      variant: "critical",
+      message: "Riesgo detectado. Tienes alertas activas que requieren atención.",
+      key
+    };
+  }
+
+  return {
+    variant: "warning",
+    message: "Tienes alertas recientes. Revisa tu estado para mantener control.",
+    key
+  };
 }
 
 export default function DashboardPage() {
@@ -38,6 +88,7 @@ export default function DashboardPage() {
   const [glucoseValueInput, setGlucoseValueInput] = useState("");
   const [measuredAtInput, setMeasuredAtInput] = useState("");
   const [chartRange, setChartRange] = useState<ChartRange>("WEEK");
+  const [dismissedBannerKey, setDismissedBannerKey] = useState<string | null>(null);
 
   const loadDashboardData = async (mountedRef?: { current: boolean }) => {
     setError(null);
@@ -132,9 +183,36 @@ export default function DashboardPage() {
   }, [risk]);
 
   const filteredChartData = useMemo(() => filterChartByRange(chartData, chartRange), [chartData, chartRange]);
+  const bannerData = useMemo(() => resolveBannerData(risk, alerts), [risk, alerts]);
+
+  useEffect(() => {
+    if (!bannerData) {
+      setDismissedBannerKey(null);
+      return;
+    }
+    if (dismissedBannerKey && dismissedBannerKey !== bannerData.key) {
+      setDismissedBannerKey(null);
+    }
+  }, [bannerData, dismissedBannerKey]);
+
+  const isBannerVisible = bannerData != null && dismissedBannerKey !== bannerData.key;
 
   return (
     <div className="dashboard-grid">
+      {isBannerVisible && bannerData ? (
+        <div className={`dashboard-alert-banner ${bannerData.variant}`} role="status" aria-live="polite">
+          <p className="dashboard-alert-text">{bannerData.message}</p>
+          <button
+            type="button"
+            className="dashboard-alert-close"
+            aria-label="Cerrar alerta"
+            onClick={() => setDismissedBannerKey(bannerData.key)}
+          >
+            ×
+          </button>
+        </div>
+      ) : null}
+
       <Section title="Resumen clínico" subtitle="Indicadores recientes para seguimiento inmediato">
         {error ? <p className="error-text">{error}</p> : null}
         <div className="stat-grid">
@@ -273,3 +351,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+

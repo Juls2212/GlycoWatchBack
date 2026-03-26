@@ -29,10 +29,6 @@ export function UserMenu() {
     router.push("/profile");
   };
 
-  const goToSettings = () => {
-    setOpen(false);
-  };
-
   const handleLogout = () => {
     setOpen(false);
     logout();
@@ -56,9 +52,6 @@ export function UserMenu() {
         <div className="user-dropdown" role="menu">
           <button type="button" className="user-dropdown-item" onClick={goToProfile}>
             Administrar perfil
-          </button>
-          <button type="button" className="user-dropdown-item" onClick={goToSettings}>
-            Configuración
           </button>
           <button type="button" className="user-dropdown-item danger" onClick={handleLogout}>
             Cerrar sesión
