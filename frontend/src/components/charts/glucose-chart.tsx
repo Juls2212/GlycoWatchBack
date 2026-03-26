@@ -36,8 +36,14 @@ export function GlucoseChart({ data }: Props) {
   return (
     <div className="chart-wrap">
       <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={data}>
-          <CartesianGrid stroke="#1a2540" strokeDasharray="4 4" />
+        <LineChart data={data} margin={{ top: 10, right: 8, bottom: 6, left: 0 }}>
+          <defs>
+            <linearGradient id="glucoseLineGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#7dc0ff" />
+              <stop offset="100%" stopColor="#3a88dc" />
+            </linearGradient>
+          </defs>
+          <CartesianGrid stroke="#1c2b48" strokeDasharray="4 4" vertical={false} />
           <XAxis
             dataKey="measuredAt"
             tickFormatter={formatAxisLabel}
@@ -51,9 +57,10 @@ export function GlucoseChart({ data }: Props) {
           <Tooltip
             contentStyle={{
               background: "#0f1626",
-              border: "1px solid #25314d",
+              border: "1px solid #2e4267",
               borderRadius: "12px",
-              color: "#dce8ff"
+              color: "#dce8ff",
+              boxShadow: "0 12px 24px rgba(0, 0, 0, 0.35)"
             }}
             labelFormatter={(value) => formatTooltipLabel(String(value))}
             formatter={(value: number) => [`${value} mg/dL`, "Glucosa"]}
@@ -61,12 +68,12 @@ export function GlucoseChart({ data }: Props) {
           <Line
             type="monotone"
             dataKey="glucoseValue"
-            stroke="#4da3ff"
-            strokeWidth={3}
+            stroke="url(#glucoseLineGradient)"
+            strokeWidth={3.2}
             dot={false}
             activeDot={{ r: 4, fill: "#8ec4ff" }}
             isAnimationActive
-            animationDuration={700}
+            animationDuration={760}
           />
         </LineChart>
       </ResponsiveContainer>

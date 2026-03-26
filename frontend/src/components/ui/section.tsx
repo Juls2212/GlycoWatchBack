@@ -14,7 +14,7 @@ export function Section({ title, subtitle, action, children }: SectionProps) {
           <h2 className="section-title">{title}</h2>
           {subtitle ? <p className="section-subtitle">{subtitle}</p> : null}
         </div>
-        {action ? <div>{action}</div> : null}
+        {action ? <div className="section-action-slot">{action}</div> : null}
       </header>
       {children}
     </section>

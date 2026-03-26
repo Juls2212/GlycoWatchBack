@@ -8,6 +8,8 @@ import { LatestMeasurementCard } from "@/features/measurements/components/latest
 import { MeasurementsTable } from "@/features/measurements/components/measurements-table";
 import { ManualMeasurementForm } from "@/features/measurements/components/manual-measurement-form";
 import { HttpError } from "@/types/api";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { FeedbackBanner } from "@/components/ui/feedback-banner";
 
 const PAGE_SIZE = 10;
 
@@ -21,6 +23,7 @@ export default function MeasurementsPage() {
   const [draftTo, setDraftTo] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -94,14 +97,17 @@ export default function MeasurementsPage() {
   };
 
   const onDeleteMeasurement = async (measurementId: number) => {
-    const confirmed = window.confirm("¿Seguro que deseas eliminar esta medición?");
-    if (!confirmed) return;
+    setPendingDeleteId(measurementId);
+  };
+
+  const confirmDeleteMeasurement = async () => {
+    if (pendingDeleteId == null) return;
 
     setError(null);
     setSuccess(null);
-    setDeletingId(measurementId);
+    setDeletingId(pendingDeleteId);
     try {
-      await deleteMeasurement(measurementId);
+      await deleteMeasurement(pendingDeleteId);
       await loadData(currentPage, filters);
       setSuccess("Medición eliminada correctamente.");
     } catch (err) {
@@ -113,6 +119,7 @@ export default function MeasurementsPage() {
       }
     } finally {
       setDeletingId(null);
+      setPendingDeleteId(null);
     }
   };
 
@@ -150,11 +157,12 @@ export default function MeasurementsPage() {
       </Section>
 
       <Section title="Historial de mediciones" subtitle="Resultados paginados y ordenados por fecha">
-        {success ? <p className="success-text">{success}</p> : null}
+        {success ? <FeedbackBanner type="success" message={success} /> : null}
+        {error ? <FeedbackBanner type="error" message={error} /> : null}
         <MeasurementsTable
           measurements={measurements}
           isLoading={isLoading}
-          error={error}
+          error={null}
           deletingId={deletingId}
           onDelete={onDeleteMeasurement}
         />
@@ -181,6 +189,18 @@ export default function MeasurementsPage() {
           </button>
         </div>
       </Section>
+
+      <ConfirmDialog
+        open={pendingDeleteId != null}
+        title="Eliminar medición"
+        description="Esta acción no se puede deshacer. ¿Deseas continuar?"
+        confirmLabel="Sí, eliminar"
+        cancelLabel="Cancelar"
+        isProcessing={deletingId != null}
+        onConfirm={confirmDeleteMeasurement}
+        onCancel={() => setPendingDeleteId(null)}
+      />
     </div>
   );
 }
+

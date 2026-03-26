@@ -5,6 +5,7 @@ import { Section } from "@/components/ui/section";
 import { AlertsList } from "@/features/alerts/components/alerts-list";
 import { fetchAlerts, markAlertAsRead } from "@/features/alerts/api";
 import { AlertItem } from "@/features/alerts/types";
+import { FeedbackBanner } from "@/components/ui/feedback-banner";
 
 export default function AlertsPage() {
   const [alerts, setAlerts] = useState<AlertItem[]>([]);
@@ -61,11 +62,12 @@ export default function AlertsPage() {
   return (
     <div className="dashboard-grid">
       <Section title="Alertas" subtitle="Historial completo de eventos de glucosa">
-        {success ? <p className="success-text">{success}</p> : null}
+        {success ? <FeedbackBanner type="success" message={success} /> : null}
+        {error ? <FeedbackBanner type="error" message={error} /> : null}
         <AlertsList
           alerts={alerts}
           isLoading={isLoading}
-          error={error}
+          error={null}
           isUpdatingId={isUpdatingId}
           onMarkAsRead={onMarkAsRead}
         />

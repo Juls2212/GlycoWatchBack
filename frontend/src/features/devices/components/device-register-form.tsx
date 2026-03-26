@@ -35,6 +35,10 @@ export function DeviceRegisterForm({
       setValidationError("Completa nombre e identificador.");
       return;
     }
+    if (nextName.length > 255 || nextIdentifier.length > 255) {
+      setValidationError("Nombre e identificador no pueden superar 255 caracteres.");
+      return;
+    }
 
     await onRegister(nextName, nextIdentifier);
     setName("");
@@ -90,4 +94,3 @@ export function DeviceRegisterForm({
     </Card>
   );
 }
-

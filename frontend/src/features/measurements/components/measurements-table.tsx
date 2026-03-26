@@ -1,4 +1,6 @@
 import { Card } from "@/components/ui/card";
+import { FeedbackBanner } from "@/components/ui/feedback-banner";
+import { SkeletonBlock } from "@/components/ui/skeleton-block";
 import { MeasurementRowActions } from "@/features/measurements/components/measurement-row-actions";
 import { MeasurementItem } from "@/features/measurements/types";
 
@@ -18,11 +20,21 @@ function resolveOrigin(item: MeasurementItem): string {
 export function MeasurementsTable({ measurements, isLoading, error, deletingId, onDelete }: Props) {
   return (
     <Card>
-      {isLoading ? <p className="soft-text">Cargando mediciones...</p> : null}
-      {error ? <p className="error-text">{error}</p> : null}
+      {isLoading ? (
+        <div className="skeleton-stack">
+          <SkeletonBlock className="skeleton-line w-40" />
+          <SkeletonBlock className="skeleton-line w-100" />
+          <SkeletonBlock className="skeleton-line w-100" />
+          <SkeletonBlock className="skeleton-line w-80" />
+        </div>
+      ) : null}
+      {error ? <FeedbackBanner type="error" message={error} /> : null}
 
       {!isLoading && !error && measurements.length === 0 ? (
-        <p className="soft-text">No hay mediciones para mostrar.</p>
+        <div className="empty-state">
+          <p className="empty-title">Sin mediciones disponibles</p>
+          <p className="soft-text">Aún no hay resultados para los filtros seleccionados.</p>
+        </div>
       ) : null}
 
       {!isLoading && !error && measurements.length > 0 ? (

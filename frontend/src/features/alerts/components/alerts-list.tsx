@@ -1,4 +1,6 @@
 import { Card } from "@/components/ui/card";
+import { FeedbackBanner } from "@/components/ui/feedback-banner";
+import { SkeletonBlock } from "@/components/ui/skeleton-block";
 import { AlertItem } from "@/features/alerts/types";
 
 type Props = {
@@ -20,11 +22,21 @@ function resolveSeverityClass(type: AlertItem["type"]): string {
 export function AlertsList({ alerts, isLoading, error, isUpdatingId, onMarkAsRead }: Props) {
   return (
     <Card>
-      {isLoading ? <p className="soft-text">Cargando alertas...</p> : null}
-      {error ? <p className="error-text">{error}</p> : null}
+      {isLoading ? (
+        <div className="skeleton-stack">
+          <SkeletonBlock className="skeleton-line w-50" />
+          <SkeletonBlock className="skeleton-line w-100" />
+          <SkeletonBlock className="skeleton-line w-90" />
+          <SkeletonBlock className="skeleton-line w-80" />
+        </div>
+      ) : null}
+      {error ? <FeedbackBanner type="error" message={error} /> : null}
 
       {!isLoading && !error && alerts.length === 0 ? (
-        <p className="soft-text">No hay alertas registradas.</p>
+        <div className="empty-state">
+          <p className="empty-title">Sin alertas registradas</p>
+          <p className="soft-text">Cuando se detecten eventos de riesgo, aparecerán aquí.</p>
+        </div>
       ) : null}
 
       {!isLoading && !error && alerts.length > 0 ? (
@@ -57,4 +69,3 @@ export function AlertsList({ alerts, isLoading, error, isUpdatingId, onMarkAsRea
     </Card>
   );
 }
-

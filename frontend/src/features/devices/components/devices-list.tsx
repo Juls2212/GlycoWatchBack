@@ -1,4 +1,6 @@
 import { Card } from "@/components/ui/card";
+import { FeedbackBanner } from "@/components/ui/feedback-banner";
+import { SkeletonBlock } from "@/components/ui/skeleton-block";
 import { DeviceRowActions } from "@/features/devices/components/device-row-actions";
 import { DeviceItem } from "@/features/devices/types";
 
@@ -25,11 +27,20 @@ function resolveStatusClass(status: DeviceItem["status"]): string {
 export function DevicesList({ devices, isLoading, error, togglingId, onToggle }: Props) {
   return (
     <Card>
-      {isLoading ? <p className="soft-text">Cargando dispositivos...</p> : null}
-      {error ? <p className="error-text">{error}</p> : null}
+      {isLoading ? (
+        <div className="skeleton-stack">
+          <SkeletonBlock className="skeleton-line w-50" />
+          <SkeletonBlock className="skeleton-line w-100" />
+          <SkeletonBlock className="skeleton-line w-90" />
+        </div>
+      ) : null}
+      {error ? <FeedbackBanner type="error" message={error} /> : null}
 
       {!isLoading && !error && devices.length === 0 ? (
-        <p className="soft-text">No hay dispositivos vinculados.</p>
+        <div className="empty-state">
+          <p className="empty-title">No hay dispositivos vinculados</p>
+          <p className="soft-text">Registra y vincula un dispositivo para comenzar a recibir datos.</p>
+        </div>
       ) : null}
 
       {!isLoading && !error && devices.length > 0 ? (
@@ -70,4 +81,3 @@ export function DevicesList({ devices, isLoading, error, togglingId, onToggle }:
     </Card>
   );
 }
-

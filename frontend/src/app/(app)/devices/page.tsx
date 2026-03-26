@@ -6,6 +6,7 @@ import { DeviceRegisterForm } from "@/features/devices/components/device-registe
 import { DevicesList } from "@/features/devices/components/devices-list";
 import { fetchDevices, linkDevice, registerDevice, toggleDevice } from "@/features/devices/api";
 import { DeviceItem, RegisterDeviceResult } from "@/features/devices/types";
+import { FeedbackBanner } from "@/components/ui/feedback-banner";
 
 export default function DevicesPage() {
   const [devices, setDevices] = useState<DeviceItem[]>([]);
@@ -94,12 +95,15 @@ export default function DevicesPage() {
   return (
     <div className="dashboard-grid">
       <Section title="Dispositivos" subtitle="Registro, vínculo y control de tus dispositivos IoT">
+        {success ? <FeedbackBanner type="success" message={success} /> : null}
+        {error ? <FeedbackBanner type="error" message={error} /> : null}
+
         <div className="devices-grid">
           <DeviceRegisterForm
             isSubmitting={isSubmitting}
             isLinking={isLinking}
-            success={success}
-            error={error}
+            success={null}
+            error={null}
             createdDevice={createdDevice}
             onRegister={onRegister}
             onLinkCreated={onLinkCreated}
@@ -108,7 +112,7 @@ export default function DevicesPage() {
           <DevicesList
             devices={devices}
             isLoading={isLoading}
-            error={error}
+            error={null}
             togglingId={togglingId}
             onToggle={onToggle}
           />

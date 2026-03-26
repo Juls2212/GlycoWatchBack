@@ -7,6 +7,7 @@ import { fetchProfile, updateProfile } from "@/features/profile/api";
 import { ProfileForm } from "@/features/profile/components/profile-form";
 import { ProfileData, UpdateProfilePayload } from "@/features/profile/types";
 import { onboardingStorage } from "@/lib/auth/onboarding";
+import { FeedbackBanner } from "@/components/ui/feedback-banner";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -70,15 +71,18 @@ export default function ProfilePage() {
   return (
     <div className="dashboard-grid">
       <Section title="Perfil de usuario" subtitle="Gestiona tus datos personales y parámetros de salud">
+        {success ? <FeedbackBanner type="success" message={success} /> : null}
+        {error ? <FeedbackBanner type="error" message={error} /> : null}
         <ProfileForm
           profile={profile}
           isLoading={isLoading}
           isSubmitting={isSubmitting}
-          error={error}
-          success={success}
+          error={null}
+          success={null}
           onSubmit={onSubmit}
         />
       </Section>
     </div>
   );
 }
+
