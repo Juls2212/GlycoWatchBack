@@ -78,20 +78,44 @@ a {
 }
 
 .nav-link {
+  position: relative;
   padding: 10px 12px;
   border-radius: 10px;
   color: var(--text-soft);
-  transition: all 0.2s ease;
+  transition: background 0.22s ease, color 0.22s ease, transform 0.22s ease;
+}
+
+.nav-link::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 999px;
+  background: transparent;
+  transition: background 0.22s ease;
 }
 
 .nav-link:hover {
   background: rgba(77, 163, 255, 0.08);
   color: var(--text);
+  transform: translateX(2px);
+}
+
+.nav-link:focus-visible {
+  outline: 1px solid rgba(77, 163, 255, 0.45);
+  outline-offset: 1px;
 }
 
 .nav-link.active {
   background: rgba(77, 163, 255, 0.14);
   color: #edf4ff;
+  transform: translateX(2px);
+}
+
+.nav-link.active::before {
+  background: linear-gradient(180deg, #7dc0ff 0%, #4da3ff 100%);
 }
 
 .app-main {

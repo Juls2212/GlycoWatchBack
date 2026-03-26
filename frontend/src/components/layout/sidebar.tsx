@@ -5,10 +5,11 @@ import { usePathname } from "next/navigation";
 
 const navItems = [
   { href: "/dashboard", label: "Panel" },
-  { href: "/analytics", label: "Análisis" },
-  { href: "/devices", label: "Dispositivos" },
   { href: "/measurements", label: "Mediciones" },
-  { href: "/alerts", label: "Alertas" }
+  { href: "/alerts", label: "Alertas" },
+  { href: "/devices", label: "Dispositivos" },
+  { href: "/profile", label: "Perfil" },
+  { href: "/analytics", label: "Análisis" }
 ];
 
 export function Sidebar() {
@@ -26,7 +27,7 @@ export function Sidebar() {
 
       <nav className="sidebar-nav">
         {navItems.map((item) => {
-          const active = pathname === item.href;
+          const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
           return (
             <Link key={item.label} href={item.href} className={`nav-link ${active ? "active" : ""}`}>
               {item.label}
