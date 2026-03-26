@@ -36,6 +36,16 @@ public class MeasurementValidationSupport {
         return new ValidationResult(true, null);
     }
 
+    public void validateMeasuredAtNotInFuture(Instant measuredAt) {
+        if (measuredAt != null && measuredAt.isAfter(Instant.now())) {
+            throw new ApiException(
+                    "INVALID_MEASURED_AT",
+                    "Measured timestamp cannot be in the future.",
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+    }
+
     public String calculateDeduplicationHash(String ownerKey, BigDecimal glucoseValue, String unit, Instant measuredAt) {
         String payload = ownerKey + "|" + glucoseValue.stripTrailingZeros().toPlainString() + "|" + unit + "|" + measuredAt.toString();
         try {
@@ -50,4 +60,3 @@ public class MeasurementValidationSupport {
     public record ValidationResult(boolean valid, String invalidReason) {
     }
 }
-

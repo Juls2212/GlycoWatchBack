@@ -1,12 +1,20 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { createManualMeasurement } from "@/features/measurements/api";
 
 type Props = {
   onCreated: () => Promise<void>;
 };
+
+function nowDateInputValue(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function nowTimeInputValue(): string {
+  return new Date().toTimeString().slice(0, 5);
+}
 
 export function ManualMeasurementForm({ onCreated }: Props) {
   const [glucoseValue, setGlucoseValue] = useState("");
@@ -16,12 +24,11 @@ export function ManualMeasurementForm({ onCreated }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  const maxDate = useMemo(() => nowDateInputValue(), []);
+
   const fillCurrentDateTime = () => {
-    const now = new Date();
-    const date = now.toISOString().slice(0, 10);
-    const time = now.toTimeString().slice(0, 5);
-    setMeasuredDate(date);
-    setMeasuredTime(time);
+    setMeasuredDate(nowDateInputValue());
+    setMeasuredTime(nowTimeInputValue());
   };
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -44,6 +51,11 @@ export function ManualMeasurementForm({ onCreated }: Props) {
       const measuredAt = new Date(`${measuredDate}T${measuredTime}`);
       if (Number.isNaN(measuredAt.getTime())) {
         setError("La fecha y hora ingresadas no son válidas.");
+        setIsSubmitting(false);
+        return;
+      }
+      if (measuredAt.getTime() > Date.now()) {
+        setError("La fecha y hora de medición no pueden estar en el futuro.");
         setIsSubmitting(false);
         return;
       }
@@ -83,7 +95,7 @@ export function ManualMeasurementForm({ onCreated }: Props) {
 
         <label className="field">
           <span>Fecha de medición</span>
-          <input type="date" value={measuredDate} onChange={(event) => setMeasuredDate(event.target.value)} />
+          <input type="date" max={maxDate} value={measuredDate} onChange={(event) => setMeasuredDate(event.target.value)} />
         </label>
 
         <label className="field">
@@ -111,3 +123,4 @@ export function ManualMeasurementForm({ onCreated }: Props) {
     </Card>
   );
 }
+

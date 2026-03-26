@@ -4,6 +4,7 @@ import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import java.math.BigDecimal;
 import java.time.Instant;
 
@@ -17,7 +18,7 @@ public record ManualMeasurementRequestDto(
         String unit,
 
         @NotNull(message = "Measured timestamp is required.")
+        @PastOrPresent(message = "Measured timestamp cannot be in the future.")
         Instant measuredAt
 ) {
 }
-

@@ -9,6 +9,7 @@ import com.glycowatch.backend.interfaces.dto.analytics.ChartPointDto;
 import com.glycowatch.backend.interfaces.dto.analytics.DashboardResponseDto;
 import com.glycowatch.backend.interfaces.exception.ApiException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
@@ -34,37 +35,20 @@ public class DashboardServiceImpl implements DashboardService {
         UserEntity user = resolveActiveUser(authenticatedEmail);
         Long userId = user.getId();
 
-        GlucoseMeasurementEntity latest = null;
-        BigDecimal average = BigDecimal.ZERO;
-        BigDecimal min = BigDecimal.ZERO;
-        BigDecimal max = BigDecimal.ZERO;
-        long alertsCount = 0L;
+        GlucoseMeasurementEntity latest = glucoseMeasurementRepository
+                .findFirstByUserIdAndIsValidTrueOrderByMeasuredAtDesc(userId)
+                .orElse(null);
 
-        try {
-            latest = glucoseMeasurementRepository
-                    .findFirstByUserIdAndIsValidTrueOrderByMeasuredAtDesc(userId)
-                    .orElse(null);
-        } catch (RuntimeException ignored) {
-            latest = null;
-        }
+        Instant since = Instant.now().minus(7, ChronoUnit.DAYS);
+        List<GlucoseMeasurementEntity> recentMeasurements =
+                glucoseMeasurementRepository.findByUserIdAndIsValidTrueAndMeasuredAtGreaterThanEqual(
+                        userId,
+                        since,
+                        PageRequest.of(0, 500, Sort.by(Sort.Direction.DESC, "measuredAt"))
+                ).getContent();
 
-        try {
-            Instant since = Instant.now().minus(7, ChronoUnit.DAYS);
-            Object[] recentStats = glucoseMeasurementRepository.getRecentStats(userId, since);
-            average = castToBigDecimalOrZero(recentStats, 0);
-            min = castToBigDecimalOrZero(recentStats, 1);
-            max = castToBigDecimalOrZero(recentStats, 2);
-        } catch (RuntimeException ignored) {
-            average = BigDecimal.ZERO;
-            min = BigDecimal.ZERO;
-            max = BigDecimal.ZERO;
-        }
-
-        try {
-            alertsCount = alertRepository.countByUserId(userId);
-        } catch (RuntimeException ignored) {
-            alertsCount = 0L;
-        }
+        RecentStats stats = calculateRecentStats(recentMeasurements);
+        long alertsCount = alertRepository.countByUserId(userId);
 
         DashboardResponseDto.LatestMeasurementDto latestDto = latest == null
                 ? null
@@ -74,7 +58,13 @@ public class DashboardServiceImpl implements DashboardService {
                         latest.getMeasuredAt()
                 );
 
-        return new DashboardResponseDto(latestDto, average, min, max, alertsCount);
+        return new DashboardResponseDto(
+                latestDto,
+                stats.average(),
+                stats.min(),
+                stats.max(),
+                alertsCount
+        );
     }
 
     @Override
@@ -97,21 +87,35 @@ public class DashboardServiceImpl implements DashboardService {
                 .orElseThrow(() -> new ApiException("USER_NOT_ACTIVE", "Authenticated user is not active.", HttpStatus.UNAUTHORIZED));
     }
 
-    private BigDecimal castToBigDecimalOrZero(Object[] stats, int index) {
-        if (stats == null || stats.length <= index || stats[index] == null) {
-            return BigDecimal.ZERO;
+    private RecentStats calculateRecentStats(List<GlucoseMeasurementEntity> recentMeasurements) {
+        if (recentMeasurements == null || recentMeasurements.isEmpty()) {
+            return new RecentStats(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
         }
-        Object value = stats[index];
-        if (value instanceof BigDecimal decimalValue) {
-            return decimalValue;
-        }
-        if (value instanceof Number numberValue) {
-            return BigDecimal.valueOf(numberValue.doubleValue());
-        }
-        try {
-            return new BigDecimal(value.toString());
-        } catch (RuntimeException ignored) {
-            return BigDecimal.ZERO;
-        }
+
+        BigDecimal sum = recentMeasurements.stream()
+                .map(GlucoseMeasurementEntity::getGlucoseValue)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal average = sum.divide(
+                BigDecimal.valueOf(recentMeasurements.size()),
+                2,
+                RoundingMode.HALF_UP
+        );
+
+        BigDecimal min = recentMeasurements.stream()
+                .map(GlucoseMeasurementEntity::getGlucoseValue)
+                .min(BigDecimal::compareTo)
+                .orElse(BigDecimal.ZERO);
+
+        BigDecimal max = recentMeasurements.stream()
+                .map(GlucoseMeasurementEntity::getGlucoseValue)
+                .max(BigDecimal::compareTo)
+                .orElse(BigDecimal.ZERO);
+
+        return new RecentStats(average, min, max);
+    }
+
+    private record RecentStats(BigDecimal average, BigDecimal min, BigDecimal max) {
     }
 }
+

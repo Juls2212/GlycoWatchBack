@@ -28,6 +28,7 @@ public class MeasurementManualServiceImpl implements MeasurementManualService {
     @Transactional
     public IngestMeasurementResponseDto createManualMeasurement(String authenticatedEmail, ManualMeasurementRequestDto request) {
         UserEntity user = resolveActiveUser(authenticatedEmail);
+        validationSupport.validateMeasuredAtNotInFuture(request.measuredAt());
 
         String normalizedUnit = validationSupport.normalizeUnit(request.unit());
         String deduplicationHash = validationSupport.calculateDeduplicationHash(
@@ -72,4 +73,3 @@ public class MeasurementManualServiceImpl implements MeasurementManualService {
                 .orElseThrow(() -> new ApiException("USER_NOT_ACTIVE", "Authenticated user is not active.", HttpStatus.UNAUTHORIZED));
     }
 }
-

@@ -91,10 +91,22 @@ export default function DashboardPage() {
 
     setIsSubmitting(true);
     try {
+      const measuredAt = new Date(measuredAtInput);
+      if (Number.isNaN(measuredAt.getTime())) {
+        setFormError("La fecha y hora de medición no son válidas.");
+        setIsSubmitting(false);
+        return;
+      }
+      if (measuredAt.getTime() > Date.now()) {
+        setFormError("La fecha y hora de medición no pueden estar en el futuro.");
+        setIsSubmitting(false);
+        return;
+      }
+
       await createManualMeasurement({
         glucoseValue,
         unit: "mg/dL",
-        measuredAt: new Date(measuredAtInput).toISOString()
+        measuredAt: measuredAt.toISOString()
       });
       setGlucoseValueInput("");
       setMeasuredAtInput("");
@@ -236,6 +248,7 @@ export default function DashboardPage() {
               <span>Fecha y hora de medición</span>
               <input
                 type="datetime-local"
+                max={new Date().toISOString().slice(0, 16)}
                 value={measuredAtInput}
                 onChange={(event) => setMeasuredAtInput(event.target.value)}
               />
